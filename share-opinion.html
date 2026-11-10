@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Write Opinion</title>
+  <title>Path Finder BH - Share Opinion</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     body { background-color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; }
@@ -15,6 +15,7 @@
     .btn-group { display: flex; gap: 15px; margin-top: 10px; }
     .form-btn { flex: 1; padding: 12px; border-radius: 20px; border: none; background-color: #dcdcdc; font-size: 14px; cursor: pointer; text-align: center; text-decoration: none; color: black; }
     .navbar { background-color: #ff0000; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; }
+    .navbar a { color: white; text-decoration: none; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -33,12 +34,16 @@
     <textarea class="field" placeholder="Your advice for a student considering this major *"></textarea>
 
     <div class="btn-group">
-      <button type="button" class="form-btn">send</button>
+      <a href="opinions.html" class="form-btn">send</a>
       <a href="opinions.html" class="form-btn">cancel</a>
     </div>
   </main>
 
-  <nav class="navbar"></nav>
+  <nav class="navbar">
+    <a href="campus-tours.html">Universities</a>
+    <a href="index.html">Home</a>
+    <a href="#">More</a>
+  </nav>
 
 </body>
 </html>
