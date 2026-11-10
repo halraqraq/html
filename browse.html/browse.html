@@ -3,15 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Browse</title>
+  <title>Path Finder BH - Browse Universities</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     body { background-color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; }
     .header { background-color: #ff0000; height: 60px; width: 100%; }
     .container { flex: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    
     .search-card { background-color: #ff0000; padding: 15px; border-radius: 30px; display: flex; flex-direction: column; gap: 10px; }
-    .search-input, .search-select { background-color: #dcdcdc; border: none; padding: 12px 15px; border-radius: 20px; width: 100%; font-size: 14px; text-align: center; outline: none; }
-    .result-box { background-color: #e0e0e0; height: 40px; border-radius: 20px; width: 100%; }
+    .search-btn, .search-select { background-color: #dcdcdc; border: none; padding: 12px 15px; border-radius: 20px; width: 100%; font-size: 14px; text-align: center; outline: none; cursor: pointer; }
+    .search-input { background-color: #dcdcdc; border: none; padding: 12px 15px; border-radius: 20px; width: 100%; font-size: 14px; text-align: center; outline: none; }
+    
+    .results-title { font-size: 14px; font-weight: bold; color: #333; margin-top: 5px; text-align: center; }
+    .results-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .uni-card { background-color: #dcdcdc; border-radius: 25px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .uni-title { font-size: 13px; font-weight: 500; color: #000; flex: 1; }
+    .view-btn { background-color: #ff0000; color: white; text-decoration: none; padding: 8px 22px; border-radius: 15px; font-size: 13px; font-weight: bold; display: inline-block; }
+
     .navbar { background-color: #ff0000; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; }
   </style>
@@ -22,9 +30,9 @@
 
   <main class="container">
     <section class="search-card">
-      <input type="text" class="search-input" placeholder="Search for a university">
-      <input type="text" class="search-input" placeholder="Search for a Major">
-      <select class="search-select">
+      <button class="search-btn" onclick="showUniversities()">Search for a university</button>
+      <input type="text" class="search-input" placeholder="Search for a Major" oninput="showUniversities()">
+      <select class="search-select" onchange="showUniversities()">
         <option value="" disabled selected>Language</option>
         <option value="en">English</option>
         <option value="ar">Arabic</option>
@@ -32,14 +40,54 @@
       <input type="text" class="search-input" placeholder="Fees">
     </section>
 
-    <div class="result-box"></div>
-    <div class="result-box"></div>
-    <div class="result-box"></div>
-    <div class="result-box"></div>
-    <div class="result-box"></div>
-    <div class="result-box"></div>
-    <div class="result-box"></div>
-    <div class="result-box"></div>
+    <div class="results-title">Available Universities in Bahrain</div>
+
+    <div class="results-list" id="uniContainer">
+      <div class="uni-card">
+        <span class="uni-title">University of Technology Bahrain</span>
+        <a href="https://www.utb.edu.bh" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">University of Bahrain</span>
+        <a href="https://www.uob.edu.bh" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">Bahrain Polytechnic</span>
+        <a href="https://www.polytechnic.bh" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">RCSI Bahrain</span>
+        <a href="https://www.rcsi.com/bahrain" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">American University of Bahrain</span>
+        <a href="https://aubh.edu.bh" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">Applied Science University</span>
+        <a href="https://www.asu.edu.bh" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">Kingdom University</span>
+        <a href="https://ku.edu.bh" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">Bahrain Institute of Banking and Finance</span>
+        <a href="https://bibf.com" target="_blank" class="view-btn">view</a>
+      </div>
+
+      <div class="uni-card">
+        <span class="uni-title">British University of Bahrain</span>
+        <a href="https://bub.bh" target="_blank" class="view-btn">view</a>
+      </div>
+    </div>
   </main>
 
   <nav class="navbar">
@@ -47,6 +95,12 @@
     <a href="index.html">Home</a>
     <a href="#">More</a>
   </nav>
+
+  <script>
+    function showUniversities() {
+      document.getElementById('uniContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
 
 </body>
 </html>
