@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Path Finder BH - Student Opinions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background-color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; }
+    .header { background-color: #ff0000; height: 60px; width: 100%; }
+    .container { flex: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+    .top-bar { background-color: #ff0000; padding: 12px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .major-select { background-color: #dcdcdc; border: none; padding: 10px 12px; border-radius: 20px; flex: 1; font-size: 12px; outline: none; }
+    .share-btn { background-color: #dcdcdc; color: #000; text-decoration: none; padding: 10px 12px; border-radius: 20px; font-size: 12px; text-align: center; }
+    .opinion-card { background-color: #dcdcdc; height: 120px; border-radius: 25px; width: 100%; }
+    .navbar { background-color: #ff0000; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; }
+    .navbar a { color: white; text-decoration: none; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <header class="header"></header>
+
+  <main class="container">
+    <section class="top-bar">
+      <select class="major-select">
+        <option value="" disabled selected>Studied or graduated from a major?</option>
+        <option value="cs">Computer Science</option>
+        <option value="bi">Business Informatics</option>
+        <option value="eng">Engineering</option>
+      </select>
+      <a href="share-opinion.html" class="share-btn">Share your experience</a>
+    </section>
+
+    <div class="opinion-card"></div>
+    <div class="opinion-card"></div>
+    <div class="opinion-card"></div>
+  </main>
+
+  <nav class="navbar">
+    <a href="campus-tours.html">Universities</a>
+    <a href="index.html">Home</a>
+    <a href="#">More</a>
+  </nav>
+
+</body>
+</html>

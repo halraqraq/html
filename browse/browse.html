@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Path Finder BH - Browse</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background-color: #ffffff; display: flex; flex-direction: column; min-height: 100vh; }
+    .header { background-color: #ff0000; height: 60px; width: 100%; }
+    .container { flex: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .search-card { background-color: #ff0000; padding: 15px; border-radius: 30px; display: flex; flex-direction: column; gap: 10px; }
+    .search-input, .search-select { background-color: #dcdcdc; border: none; padding: 12px 15px; border-radius: 20px; width: 100%; font-size: 14px; text-align: center; outline: none; }
+    .result-box { background-color: #e0e0e0; height: 40px; border-radius: 20px; width: 100%; }
+    .navbar { background-color: #ff0000; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; }
+    .navbar a { color: white; text-decoration: none; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <header class="header"></header>
+
+  <main class="container">
+    <section class="search-card">
+      <input type="text" class="search-input" placeholder="Search for a university">
+      <input type="text" class="search-input" placeholder="Search for a Major">
+      <select class="search-select">
+        <option value="" disabled selected>Language</option>
+        <option value="en">English</option>
+        <option value="ar">Arabic</option>
+      </select>
+      <input type="text" class="search-input" placeholder="Fees">
+    </section>
+
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+    <div class="result-box"></div>
+  </main>
+
+  <nav class="navbar">
+    <a href="campus-tours.html">Universities</a>
+    <a href="index.html">Home</a>
+    <a href="#">More</a>
+  </nav>
+
+</body>
+</html>
