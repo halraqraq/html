@@ -3,60 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Browse</title>
+  <title>Path Finder BH - All Bahrain Universities & Majors</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; }
-    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .container { flex: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
+    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
+    .container { flex: 1; max-width: 540px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
     
+    /* صندوق البحث والفلترة */
     .search-card { background: linear-gradient(135deg, #ef233c, #d90429); padding: 20px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 20px rgba(217, 4, 41, 0.2); }
-    .search-btn, .search-select, .search-input { background-color: #ffffff; border: 1px solid transparent; padding: 12px 16px; border-radius: 16px; width: 100%; font-size: 14px; text-align: center; outline: none; transition: all 0.2s; }
-    .search-btn { cursor: pointer; font-weight: 600; color: #2b2d42; }
-    .search-btn:hover { background-color: #edf2f4; }
+    .search-input, .search-select { background-color: #ffffff; border: 2px solid transparent; padding: 12px 16px; border-radius: 16px; width: 100%; font-size: 14px; outline: none; transition: all 0.2s; color: #2b2d42; }
+    .search-input:focus, .search-select:focus { border-color: #2b2d42; }
     .search-input::placeholder { color: #8d99ae; }
     
-    .results-list { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-top: 8px; }
-    .uni-card { background-color: #ffffff; border-radius: 20px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; }
-    .uni-title { font-size: 14px; font-weight: 600; color: #2b2d42; flex: 1; padding-right: 10px; }
-    .view-btn { background-color: #d90429; color: white; text-decoration: none; padding: 8px 20px; border-radius: 14px; font-size: 13px; font-weight: 600; transition: background 0.2s; }
+    .filter-row { display: flex; gap: 10px; }
+    .reset-btn { background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 10px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
+    .reset-btn:hover { background-color: rgba(255, 255, 255, 0.35); }
+
+    /* عداد النتائج */
+    .results-info { font-size: 13px; font-weight: 600; color: #6c757d; padding: 0 5px; display: flex; justify-content: space-between; }
+
+    /* قائمة الجامعات */
+    .results-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .uni-card { background-color: #ffffff; border-radius: 20px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; transition: transform 0.2s; }
+    .uni-card:hover { transform: translateY(-2px); border-color: #d90429; }
+    .uni-info { flex: 1; padding-right: 12px; }
+    .uni-title { font-size: 15px; font-weight: 700; color: #2b2d42; display: block; margin-bottom: 4px; }
+    .uni-meta { font-size: 12px; color: #8d99ae; }
+    .view-btn { background-color: #d90429; color: white; border: none; padding: 10px 20px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
     .view-btn:hover { background-color: #ef233c; }
 
-    .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; }
-    .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.85; }
+    /* نافذة تفاصيل الجامعة والتخصصات (Modal) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+    .modal-box { background: white; width: 100%; max-width: 500px; border-radius: 24px; padding: 22px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.25); animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #edf2f4; padding-bottom: 12px; margin-bottom: 12px; }
+    .modal-title { font-size: 17px; font-weight: 700; color: #d90429; padding-right: 10px; line-height: 1.3; }
+    .close-btn { background: #edf2f4; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; color: #2b2d42; flex-shrink: 0; }
+    
+    .modal-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .badge { background: #f8f9fa; border: 1px solid #dee2e6; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #495057; }
+    
+    .modal-filter { width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid #dee2e6; font-size: 13px; margin-bottom: 12px; outline: none; background: #f8f9fa; }
+    .modal-filter:focus { border-color: #d90429; background: #fff; }
+
+    .majors-heading { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #2b2d42; }
+    .majors-scroll { overflow-y: auto; flex: 1; padding-right: 4px; margin-bottom: 15px; }
+    .majors-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .majors-list li { background: #f8f9fa; padding: 9px 13px; border-radius: 10px; font-size: 12.5px; border-left: 4px solid #d90429; font-weight: 500; line-height: 1.4; }
+    
+    .official-link { display: block; text-align: center; background: #2b2d42; color: white; text-decoration: none; padding: 12px; border-radius: 14px; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+    .official-link:hover { background: #1a1b29; }
+
+    .no-results { text-align: center; padding: 30px; color: #8d99ae; font-size: 14px; background: white; border-radius: 20px; }
+
+    /* الشريط السفلي */
+    .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
+    .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
+    .navbar a:hover { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <header class="header"></header>
+  <header class="header">Browse Universities & Majors</header>
 
   <main class="container">
+    <!-- قسم البحث والفلترة -->
     <section class="search-card">
-      <button class="search-btn" onclick="showUniversities()">Search for a University</button>
-      <input type="text" class="search-input" placeholder="Search for a Major" oninput="showUniversities()">
-      <select class="search-select" onchange="showUniversities()">
-        <option value="" disabled selected>Language</option>
-        <option value="en">English</option>
-        <option value="ar">Arabic</option>
-      </select>
-      <input type="text" class="search-input" placeholder="Fees Range">
+      <input type="text" id="uniSearch" class="search-input" list="uniSuggestions" placeholder="Search University (e.g., UOB, UTB, Polytechnic)..." oninput="filterData()">
+      <datalist id="uniSuggestions"></datalist>
+
+      <input type="text" id="majorSearch" class="search-input" list="majorSuggestions" placeholder="Search ANY Major (e.g., Cyber Security, Law, Medicine)..." oninput="filterData()">
+      <datalist id="majorSuggestions"></datalist>
+
+      <div class="filter-row">
+        <select id="langFilter" class="search-select" onchange="filterData()">
+          <option value="all">All Languages</option>
+          <option value="English">English</option>
+          <option value="Arabic">Arabic</option>
+        </select>
+
+        <select id="typeFilter" class="search-select" onchange="filterData()">
+          <option value="all">All Sectors</option>
+          <option value="Public">Public (حكومية)</option>
+          <option value="Private">Private (خاصة)</option>
+        </select>
+      </div>
+
+      <button class="reset-btn" onclick="resetFilters()">Reset All Filters</button>
     </section>
 
-    <div class="results-list" id="uniContainer">
-      <div class="uni-card">
-        <span class="uni-title">University of Technology Bahrain</span>
-        <a href="https://www.utb.edu.bh" target="_blank" class="view-btn">View</a>
-      </div>
-      <div class="uni-card">
-        <span class="uni-title">University of Bahrain</span>
-        <a href="https://www.uob.edu.bh" target="_blank" class="view-btn">View</a>
-      </div>
-      <div class="uni-card">
-        <span class="uni-title">Bahrain Polytechnic</span>
-        <a href="https://www.polytechnic.bh" target="_blank" class="view-btn">View</a>
-      </div>
+    <div class="results-info">
+      <span id="resultsCount">Loading universities...</span>
+      <span>Click "View" for full list</span>
     </div>
+
+    <!-- قائمة الجامعات -->
+    <div class="results-list" id="uniContainer"></div>
   </main>
+
+  <!-- نافذة عرض تخصصات الجامعة -->
+  <div class="modal-overlay" id="uniModal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalUniName">University Name</h2>
+        <button class="close-btn" onclick="forceCloseModal()">✕</button>
+      </div>
+      <div class="modal-badges" id="modalBadges"></div>
+      <input type="text" id="modalInsideSearch" class="modal-filter" placeholder="Filter majors inside this university..." oninput="filterInsideModal()">
+      <div class="majors-heading" id="modalMajorsCount">All Majors:</div>
+      <div class="majors-scroll">
+        <ul class="majors-list" id="modalMajorsList"></ul>
+      </div>
+      <a href="#" target="_blank" id="modalOfficialLink" class="official-link">Visit Official Website ↗</a>
+    </div>
+  </div>
 
   <nav class="navbar">
     <a href="campus-tours.html">Universities</a>
@@ -65,10 +127,279 @@
   </nav>
 
   <script>
-    function showUniversities() {
-      document.getElementById('uniContainer').scrollIntoView({ behavior: 'smooth' });
-    }
-  </script>
-
-</body>
-</html>
+    // قاعدة بيانات شاملة لجميع جامعات البحرين (الحكومية والخاصة) وكافة تخصصاتها
+    const universitiesData = [
+      {
+        name: "University of Bahrain (UOB)",
+        type: "Public",
+        languages: ["English", "Arabic"],
+        location: "Sakhir / Isa Town",
+        website: "https://www.uob.edu.bh",
+        majors: [
+          "B.Sc. in Computer Science (علوم الحاسوب)",
+          "B.Sc. in Information Systems (نظم المعلومات)",
+          "B.Sc. in Computer Engineering (هندسة الحاسوب)",
+          "B.Sc. in Software Engineering (هندسة البرمجيات)",
+          "B.Sc. in Cyber Security (الأمن السيبراني)",
+          "B.Sc. in Cloud Computing (الحوسبة السحابية)",
+          "B.Sc. in Network Engineering (هندسة الشبكات)",
+          "B.Sc. in Civil Engineering (الهندسة المدنية)",
+          "B.Sc. in Mechanical Engineering (الهندسة الميكانيكية)",
+          "B.Sc. in Electrical Engineering (الهندسة الكهربائية)",
+          "B.Sc. in Electronic Engineering (الهندسة الإلكترونية)",
+          "B.Sc. in Chemical Engineering (الهندسة الكيميائية)",
+          "B.Sc. in Process Instrumentation & Control Engineering (هندسة الأجهزة الدقيقة والتحكم)",
+          "B.Sc. in Architecture (العمارة)",
+          "B.Sc. in Interior Design (التصميم الداخلي)",
+          "B.Sc. in Landscape Architecture (عمارة البيئة)",
+          "B.Sc. in Accounting (المحاسبة)",
+          "B.Sc. in Banking & Finance (الأعمال المصرفية والمالية)",
+          "B.Sc. in Management (الإدارة)",
+          "B.Sc. in Marketing (التسويق)",
+          "B.Sc. in Economics (الاقتصاد)",
+          "B.Sc. in Business Analytics (تحليلات الأعمال)",
+          "Bachelor of Laws - LLB (الحقوق / القانون)",
+          "B.A. in Mass Communication - Journalism, Radio & TV, PR (الإعلام - صحافة، إذاعة وتلفزيون، علاقات عامة)",
+          "B.A. in Digital Media (الإعلام الرقمي)",
+          "B.A. in English Language & Literature (اللغة الإنجليزية وآدابها)",
+          "B.A. in American Studies (الدراسات الأمريكية)",
+          "B.A. in Arabic Language & Literature (اللغة العربية وآدابها)",
+          "B.A. in Islamic Studies (الدراسات الإسلامية)",
+          "B.A. in History (التاريخ)",
+          "B.A. in Sociology (علم الاجتماع)",
+          "B.A. in Social Work (الخدمة الاجتماعية)",
+          "B.A. in Psychology (علم النفس)",
+          "B.A. in Fine Arts & Graphic Design (الفنون الجميلة والتصميم الجرافيكي)",
+          "B.A. in Tourism (السياحة)",
+          "B.Sc. in Mathematics (الرياضيات)",
+          "B.Sc. in Actuarial Science (العلوم الاكتوارية)",
+          "B.Sc. in Statistics & Operations Research (الإحصاء وبحوث العمليات)",
+          "B.Sc. in Physics (الفيزياء)",
+          "B.Sc. in Chemistry (الكيمياء)",
+          "B.Sc. in Biology (علوم الحياة)",
+          "B.Sc. in Environmental Chemistry (الكيمياء البيئية)",
+          "B.Sc. in Physical Education (التربية الرياضية)",
+          "B.Sc. in Nursing (التمريض)",
+          "B.Sc. in Pharmacy (الصيدلة)",
+          "B.Sc. in Medical Laboratory Sciences (علوم المختبرات الطبية)",
+          "B.Sc. in Physiotherapy (العلاج الطبيعي)",
+          "B.Sc. in Radiologic Technology (تقنية الأشعة)"
+        ]
+      },
+      {
+        name: "Bahrain Polytechnic",
+        type: "Public",
+        languages: ["English"],
+        location: "Isa Town",
+        website: "https://www.polytechnic.bh",
+        majors: [
+          "Bachelor of ICT - Programming (تقنية المعلومات - البرمجة)",
+          "Bachelor of ICT - Networking (تقنية المعلومات - الشبكات)",
+          "Bachelor of ICT - Information Systems (تقنية المعلومات - نظم المعلومات)",
+          "Bachelor of ICT - Cyber Security (تقنية المعلومات - الأمن السيبراني)",
+          "Bachelor of Engineering Technology - Mechanical (تكنولوجيا الهندسة الميكانيكية)",
+          "Bachelor of Engineering Technology - Electrical (تكنولوجيا الهندسة الكهربائية)",
+          "Bachelor of Engineering Technology - Electronics (تكنولوجيا هندسة الإلكترونيات)",
+          "Bachelor of Engineering Technology - Electromechanical (تكنولوجيا الهندسة الكهروميكانيكية)",
+          "Bachelor of Business - Accounting (إدارة الأعمال - المحاسبة)",
+          "Bachelor of Business - Banking & Finance (إدارة الأعمال - البنوك والتمويل)",
+          "Bachelor of Business - Human Resource Management (إدارة الأعمال - الموارد البشرية)",
+          "Bachelor of Business - Management (إدارة الأعمال - الإدارة)",
+          "Bachelor of Business - Marketing (إدارة الأعمال - التسويق)",
+          "Bachelor of International Logistics Management (إدارة اللوجستيات العالمية)",
+          "Bachelor of Visual Design (التصميم المرئي)",
+          "Bachelor of Web Media (إعلام الويب)",
+          "Bachelor of Creative Media (الإعلام الإبداعي)",
+          "Bachelor of Film & Animation (الأفلام والرسوم المتحركة)"
+        ]
+      },
+      {
+        name: "University of Technology Bahrain (UTB)",
+        type: "Private",
+        languages: ["English"],
+        location: "Salmabad",
+        website: "https://www.utb.edu.bh",
+        majors: [
+          "B.Sc. in Business Informatics (معلوماتية الأعمال)",
+          "B.Sc. in Computer Science (علوم الحاسوب)",
+          "B.Sc. in Information Technology (تقنية المعلومات)",
+          "B.Sc. in Data Analytics & AI (تحليل البيانات والذكاء الاصطناعي)",
+          "B.Sc. in International Business (الأعمال الدولية)",
+          "B.Sc. in Accounting & Finance (المحاسبة والتمويل)",
+          "B.Sc. in Digital Marketing (التسويق الرقمي)",
+          "B.Sc. in Informatics Engineering (هندسة المعلوماتية)",
+          "B.Sc. in Mechatronics Engineering (هندسة الميكاترونكس)",
+          "B.Sc. in Environmental Engineering (الهندسة البيئية)"
+        ]
+      },
+      {
+        name: "Arabian Gulf University (AGU)",
+        type: "Public",
+        languages: ["English", "Arabic"],
+        location: "Manama",
+        website: "https://www.agu.edu.bh",
+        majors: [
+          "Doctor of Medicine - MD (دكتور في الطب البشري)",
+          "B.Sc. in Nursing (بكالوريوس التمريض)",
+          "M.Sc. / PhD in Molecular Medicine & Biotechnology (الطب الجزيئي والتقنية الحيوية)",
+          "M.Sc. / PhD in Gifted Education (تربية الموهوبين)",
+          "M.Sc. / PhD in Learning Disabilities & Special Education (صعوبات التعلم والتربية الخاصة)",
+          "M.Sc. in Environmental Management & Water Resources (الإدارة البيئية والموارد المائية)",
+          "M.Sc. in Innovation & Technology Management (إدارة الابتكار والتقنية)",
+          "M.Sc. in Regenerative Medicine (الطب التجديدي)"
+        ]
+      },
+      {
+        name: "RCSI Bahrain (Royal College of Surgeons in Ireland)",
+        type: "Private",
+        languages: ["English"],
+        location: "Busaiteen",
+        website: "https://www.rcsi.com/bahrain",
+        majors: [
+          "Medicine - MB BCh BAO (الطب البشري والجراحة)",
+          "B.Sc. in Nursing (بكالوريوس التمريض)",
+          "Higher Diploma in Midwifery (دبلوم القبالة)",
+          "M.Sc. in Nursing & Healthcare Management (ماجستير التمريض وإدارة الرعاية الصحية)"
+        ]
+      },
+      {
+        name: "American University of Bahrain (AUBH)",
+        type: "Private",
+        languages: ["English"],
+        location: "Riffa",
+        website: "https://aubh.edu.bh",
+        majors: [
+          "B.Sc. in Computer Science (علوم الحاسوب)",
+          "B.Sc. in Computer Engineering (هندسة الحاسوب)",
+          "B.Sc. in Industrial Engineering (الهندسة الصناعية)",
+          "B.Sc. in Mechanical Engineering (الهندسة الميكانيكية)",
+          "B.Sc. in Civil Engineering (الهندسة المدنية)",
+          "B.B.A. in Finance (إدارة الأعمال - المالية)",
+          "B.B.A. in Management (إدارة الأعمال - الإدارة)",
+          "B.B.A. in Marketing (إدارة الأعمال - التسويق)",
+          "B.B.A. in Human Resources (إدارة الأعمال - الموارد البشرية)",
+          "B.B.A. in Digital Marketing & Social Media (التسويق الرقمي والتواصل الاجتماعي)",
+          "B.A. in Multimedia Design (تصميم الوسائط المتعددة)"
+        ]
+      },
+      {
+        name: "Applied Science University (ASU)",
+        type: "Private",
+        languages: ["English", "Arabic"],
+        location: "East Al-Ekir",
+        website: "https://www.asu.edu.bh",
+        majors: [
+          "Bachelor of Law - Arabic (الحقوق / القانون - عربي)",
+          "Bachelor of Laws - LLB English (القانون - إنجليزي - جامعة لندن ساوث بانك)",
+          "Bachelor of Political Science (العلوم السياسية)",
+          "Bachelor of Business Administration (إدارة الأعمال)",
+          "Bachelor of Accounting & Finance (المحاسبة والتمويل)",
+          "Bachelor of Accounting (المحاسبة - عربي)",
+          "Bachelor of Management Information Systems (نظم المعلومات الإدارية)",
+          "Bachelor of Computer Science (علوم الحاسوب)",
+          "Bachelor of Graphic Design (التصميم الجرافيكي)",
+          "Bachelor of Interior Design (التصميم الداخلي)",
+          "B.Eng. in Architectural Engineering (الهندسة المعمارية - بريطانيا)",
+          "B.Eng. in Civil & Construction Engineering (الهندسة المدنية والإنشائية - بريطانيا)",
+          "B.Eng. in Mechanical Engineering (الهندسة الميكانيكية - بريطانيا)",
+          "B.Eng. in Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)"
+        ]
+      },
+      {
+        name: "Ahlia University",
+        type: "Private",
+        languages: ["English", "Arabic"],
+        location: "Manama",
+        website: "https://www.ahlia.edu.bh",
+        majors: [
+          "B.Sc. in Information Technology (تقنية المعلومات)",
+          "B.Sc. in Distributed Systems & Multimedia (الأنظمة الموزعة والوسائط المتعددة)",
+          "B.Sc. in Mobile & Network Engineering (هندسة الشبكات والهواتف النقالة)",
+          "B.Sc. in Accounting & Finance (المحاسبة والتمويل)",
+          "B.Sc. in Banking & Finance (المصارف والتمويل)",
+          "B.Sc. in Economics & Finance (الاقتصاد والتمويل)",
+          "B.Sc. in Management & Marketing (الإدارة والتسويق)",
+          "B.Sc. in Management Information Systems (نظم المعلومات الإدارية)",
+          "B.A. in Mass Communication & Public Relations (الإعلام والعلاقات العامة)",
+          "B.A. in Interior Design (التصميم الداخلي)",
+          "B.Sc. in Physiotherapy (العلاج الطبيعي)"
+        ]
+      },
+      {
+        name: "Kingdom University (KU)",
+        type: "Private",
+        languages: ["English", "Arabic"],
+        location: "Riffa",
+        website: "https://ku.edu.bh",
+        majors: [
+          "Bachelor of Law (الحقوق / القانون)",
+          "B.Sc. in Architecture (العمارة)",
+          "B.Sc. in Interior Design (التصميم الداخلي)",
+          "B.Sc. in Business Management (إدارة الأعمال)",
+          "B.Sc. in Finance & Accounting (المالية والمحاسبة)",
+          "B.Sc. in Finance & Banking (المالية والمصارف)",
+          "B.Sc. in Computer Science (علوم الحاسوب)"
+        ]
+      },
+      {
+        name: "Gulf University",
+        type: "Private",
+        languages: ["English", "Arabic"],
+        location: "Sanad",
+        website: "https://www.gulfuniversity.edu.bh",
+        majors: [
+          "B.A. in Mass Communication & Public Relations (الإعلام والعلاقات العامة)",
+          "B.Sc. in Interior Design Engineering (هندسة التصميم الداخلي)",
+          "B.Sc. in Human Resource Management (إدارة الموارد البشرية)",
+          "B.Sc. in Accounting & Financial Sciences (المحاسبة والعلوم المالية)",
+          "B.Sc. in Administrative Sciences (العلوم الإدارية)",
+          "Bachelor of Law (القانون)",
+          "B.Eng. in Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)",
+          "B.Eng. in Mechanical Engineering (الهندسة الميكانيكية)",
+          "B.Sc. in Automotive Engineering (هندسة السيارات)"
+        ]
+      },
+      {
+        name: "British University of Bahrain (BUB)",
+        type: "Private",
+        languages: ["English"],
+        location: "Saar",
+        website: "https://bub.bh",
+        majors: [
+          "B.Sc. in Computer Science (علوم الحاسوب)",
+          "B.Sc. in Computer Science with Cyber Security (علوم الحاسوب والأمن السيبراني)",
+          "B.Sc. in Software Engineering (هندسة البرمجيات)",
+          "B.Sc. in Information Technology (تقنية المعلومات)",
+          "B.Sc. in Business Management (إدارة الأعمال)",
+          "B.Sc. in Business Management with Finance (إدارة الأعمال والمالية)",
+          "B.Sc. in Business Management with Marketing (إدارة الأعمال والتسويق)",
+          "B.Sc. in Accounting & Finance (المحاسبة والتمويل)",
+          "B.Sc. in Architecture (العمارة)",
+          "B.Sc. in Interior Design (التصميم الداخلي)",
+          "B.Sc. in Quantity Surveying (حساب الكميات)",
+          "B.Eng. in Civil Engineering (الهندسة المدنية)",
+          "B.Eng. in Mechanical Engineering (الهندسة الميكانيكية)",
+          "B.Eng. in Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)"
+        ]
+      },
+      {
+        name: "Arab Open University (AOU)",
+        type: "Private",
+        languages: ["English", "Arabic"],
+        location: "A'ali",
+        website: "https://www.aou.org.bh",
+        majors: [
+          "B.Sc. in Information Technology & Computing (تقنية المعلومات والحوسبة)",
+          "B.Sc. in Computing with Business (الحوسبة مع الأعمال)",
+          "B.Sc. in Cyber Security (الأمن السيبراني)",
+          "B.A. in Business Studies - Accounting (دراسات الأعمال - المحاسبة)",
+          "B.A. in Business Studies - Marketing (دراسات الأعمال - التسويق)",
+          "B.A. in Business Studies - Systems (دراسات الأعمال - النظم الإدارية)",
+          "B.A. in Business Studies - Economics (دراسات الأعمال - الاقتصاد)",
+          "B.A. in English Language & Literature (اللغة الإنجليزية وآدابها)",
+          "B.A. in Graphic & Multimedia Design (التصميم الجرافيكي والوسائط المتعددة)"
+        ]
+      },
+      {
+        name: "Royal University for Women (RUW)",
+        type
