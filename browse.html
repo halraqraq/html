@@ -8,7 +8,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
     .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
-    .container { flex: 1; max-width: 540px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .container { flex: 1; max-width: 560px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
     
     /* صندوق البحث والفلترة */
     .search-card { background: linear-gradient(135deg, #ef233c, #d90429); padding: 20px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 20px rgba(217, 4, 41, 0.2); }
@@ -23,15 +23,22 @@
     /* عداد النتائج */
     .results-info { font-size: 13px; font-weight: 600; color: #6c757d; padding: 0 5px; display: flex; justify-content: space-between; }
 
-    /* قائمة الجامعات */
-    .results-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    .uni-card { background-color: #ffffff; border-radius: 20px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; transition: transform 0.2s; }
+    /* بطاقة الجامعة مع التخصصات المعروضة */
+    .results-list { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+    .uni-card { background-color: #ffffff; border-radius: 20px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; transition: transform 0.2s, border-color 0.2s; }
     .uni-card:hover { transform: translateY(-2px); border-color: #d90429; }
-    .uni-info { flex: 1; padding-right: 12px; }
-    .uni-title { font-size: 15px; font-weight: 700; color: #2b2d42; display: block; margin-bottom: 4px; }
+    
+    .uni-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .uni-info { flex: 1; }
+    .uni-title { font-size: 15px; font-weight: 700; color: #2b2d42; display: block; margin-bottom: 4px; line-height: 1.3; }
     .uni-meta { font-size: 12px; color: #8d99ae; }
-    .view-btn { background-color: #d90429; color: white; border: none; padding: 10px 20px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+    .view-btn { background-color: #d90429; color: white; border: none; padding: 9px 18px; border-radius: 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap; flex-shrink: 0; }
     .view-btn:hover { background-color: #ef233c; }
+
+    /* شريط التخصصات المصغرة داخل بطاقة الجامعة */
+    .majors-preview { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; border-top: 1px solid #f1f3f5; }
+    .major-pill { background-color: #f8f9fa; color: #495057; border: 1px solid #e9ecef; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+    .major-pill.more-pill { background-color: #fff0f3; color: #d90429; border-color: #ffccd5; font-weight: 700; cursor: pointer; }
 
     /* نافذة تفاصيل الجامعة والتخصصات (Modal) */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
@@ -96,14 +103,14 @@
 
     <div class="results-info">
       <span id="resultsCount">Loading universities...</span>
-      <span>Click "View" for full list</span>
+      <span>All 16 Universities Listed</span>
     </div>
 
-    <!-- قائمة الجامعات -->
+    <!-- قائمة الجامعات مع عرض تخصصاتها مباشرة -->
     <div class="results-list" id="uniContainer"></div>
   </main>
 
-  <!-- نافذة عرض تخصصات الجامعة -->
+  <!-- نافذة عرض كافة تخصصات الجامعة -->
   <div class="modal-overlay" id="uniModal" onclick="closeModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -127,7 +134,6 @@
   </nav>
 
   <script>
-    // قاعدة بيانات شاملة لجميع جامعات البحرين (الحكومية والخاصة) وكافة تخصصاتها
     const universitiesData = [
       {
         name: "University of Bahrain (UOB)",
@@ -159,7 +165,7 @@
           "B.Sc. in Economics (الاقتصاد)",
           "B.Sc. in Business Analytics (تحليلات الأعمال)",
           "Bachelor of Laws - LLB (الحقوق / القانون)",
-          "B.A. in Mass Communication - Journalism, Radio & TV, PR (الإعلام - صحافة، إذاعة وتلفزيون، علاقات عامة)",
+          "B.A. in Mass Communication (الإعلام)",
           "B.A. in Digital Media (الإعلام الرقمي)",
           "B.A. in English Language & Literature (اللغة الإنجليزية وآدابها)",
           "B.A. in American Studies (الدراسات الأمريكية)",
@@ -402,4 +408,149 @@
       },
       {
         name: "Royal University for Women (RUW)",
-        type
+        type: "Private",
+        languages: ["English", "Arabic"],
+        location: "Riffa",
+        website: "https://www.ruw.edu.bh",
+        majors: [
+          "Bachelor of Laws - LLB (الحقوق / القانون)",
+          "Bachelor of Business - Banking & Finance (إدارة الأعمال - البنوك والتمويل)",
+          "Bachelor of Business - Human Resources (إدارة الأعمال - الموارد البشرية)",
+          "Bachelor of Business - International Business (إدارة الأعمال - الأعمال الدولية)",
+          "Bachelor of Business - Marketing (إدارة الأعمال - التسويق)",
+          "Bachelor of Architecture (العمارة)",
+          "Bachelor of Interior Design (التصميم الداخلي)",
+          "Bachelor of Fashion Design (تصميم الأزياء)",
+          "Bachelor of Graphic Design (التصميم الجرافيكي)",
+          "B.Sc. in Information Technology (تقنية المعلومات)",
+          "B.Sc. in Computer Science (علوم الحاسوب)"
+        ]
+      },
+      {
+        name: "University College of Bahrain (UCB)",
+        type: "Private",
+        languages: ["English"],
+        location: "Saar",
+        website: "https://www.ucb.edu.bh",
+        majors: [
+          "B.Sc. in Business Administration - Finance (إدارة الأعمال - المالية)",
+          "B.Sc. in Business Administration - Islamic Finance (إدارة الأعمال - التمويل الإسلامي)",
+          "B.Sc. in Business Administration - Management (إدارة الأعمال - الإدارة)",
+          "B.Sc. in Business Administration - Marketing (إدارة الأعمال - التسويق)",
+          "B.Sc. in Information Technology (تقنية المعلومات)",
+          "B.A. in Communication & Multimedia (الاتصال والوسائط المتعددة)",
+          "B.A. in Graphic Design (التصميم الجرافيكي)",
+          "B.A. in Public Relations (العلاقات العامة)"
+        ]
+      },
+      {
+        name: "Bahrain Institute of Banking and Finance (BIBF)",
+        type: "Private",
+        languages: ["English"],
+        location: "Bahrain Bay",
+        website: "https://www.bibf.com",
+        majors: [
+          "B.Sc. in Banking & Finance - Bangor University (البنوك والتمويل)",
+          "B.Sc. in Accounting & Finance - Bangor University (المحاسبة والتمويل)",
+          "B.Sc. in Islamic Finance - Bangor University (التمويل الإسلامي)",
+          "B.Sc. in Business Administration & Finance (إدارة الأعمال والمالية)",
+          "B.Sc. in Economics & Management - University of London (الاقتصاد والإدارة)",
+          "B.Sc. in Data Science & Business Analytics - University of London (علوم البيانات وتحليل الأعمال)",
+          "B.Sc. in Digital Innovation & FinTech (الابتكار الرقمي والتقنية المالية)"
+        ]
+      },
+      {
+        name: "Bahrain Teacher College (BTC)",
+        type: "Public",
+        languages: ["English", "Arabic"],
+        location: "Sakhir",
+        website: "https://www.btc.uob.edu.bh",
+        majors: [
+          "B.Ed. in Primary Education - Cycle 1 (بكالوريوس التربية - نظام الفصل)",
+          "B.Ed. in Arabic & Islamic Studies Education (تعليم اللغة العربية والدراسات الإسلامية)",
+          "B.Ed. in English Language Education (تعليم اللغة الإنجليزية)",
+          "B.Ed. in Mathematics & Science Education (تعليم الرياضيات والعلوم)"
+        ]
+      }
+    ];
+
+    let currentModalMajors = [];
+
+    function populateSuggestions() {
+      const uniDatalist = document.getElementById('uniSuggestions');
+      const majorDatalist = document.getElementById('majorSuggestions');
+      const uniqueMajors = new Set();
+
+      universitiesData.forEach(uni => {
+        const option = document.createElement('option');
+        option.value = uni.name;
+        uniDatalist.appendChild(option);
+
+        uni.majors.forEach(major => {
+          const cleanMajor = major.split(' (')[0].replace(/^(B\.Sc\. in |B\.A\. in |B\.Eng\. in |B\.B\.A\. in |B\.Ed\. in |Bachelor of )/i, '');
+          uniqueMajors.add(cleanMajor);
+        });
+      });
+
+      Array.from(uniqueMajors).sort().forEach(major => {
+        const option = document.createElement('option');
+        option.value = major;
+        majorDatalist.appendChild(option);
+      });
+    }
+
+    function getShortMajorName(fullMajor) {
+      return fullMajor.split(' (')[0].replace(/^(B\.Sc\. in |B\.A\. in |B\.Eng\. in |B\.B\.A\. in |B\.Ed\. in |Bachelor of )/i, '');
+    }
+
+    function renderUniversities(list) {
+      const container = document.getElementById('uniContainer');
+      const countLabel = document.getElementById('resultsCount');
+      container.innerHTML = '';
+
+      const totalMajors = list.reduce((sum, u) => sum + u.majors.length, 0);
+      countLabel.textContent = `${list.length} Universities • ${totalMajors} Majors`;
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="no-results">No universities or majors match your search.<br>Try searching in English or Arabic!</div>`;
+        return;
+      }
+
+      list.forEach(uni => {
+        const safeName = uni.name.replace(/'/g, "\\'");
+        const previewCount = 4;
+        const previewMajors = uni.majors.slice(0, previewCount);
+        const remainingCount = uni.majors.length - previewCount;
+
+        let pillsHtml = previewMajors.map(m => `<span class="major-pill">${getShortMajorName(m)}</span>`).join('');
+        if (remainingCount > 0) {
+          pillsHtml += `<span class="major-pill more-pill" onclick="openUniModal('${safeName}')">+${remainingCount} more majors</span>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'uni-card';
+        card.innerHTML = `
+          <div class="uni-top">
+            <div class="uni-info">
+              <span class="uni-title">${uni.name}</span>
+              <span class="uni-meta">🏛️ ${uni.type} • 📍 ${uni.location} • 🗣️ ${uni.languages.join(' / ')}</span>
+            </div>
+            <button class="view-btn" onclick="openUniModal('${safeName}')">View All (${uni.majors.length})</button>
+          </div>
+          <div class="majors-preview">
+            ${pillsHtml}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterData() {
+      const uniQuery = document.getElementById('uniSearch').value.toLowerCase().trim();
+      const majorQuery = document.getElementById('majorSearch').value.toLowerCase().trim();
+      const langQuery = document.getElementById('langFilter').value;
+      const typeQuery = document.getElementById('typeFilter').value;
+
+      const filtered = universitiesData.filter(uni => {
+        const matchUni = uni.name.toLowerCase().includes(uniQuery);
+        const matchMajor = major
