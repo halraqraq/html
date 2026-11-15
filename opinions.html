@@ -34,6 +34,144 @@
 
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
+
+    /* ستايل القائمة المنسدلة الكشخة */
+    select.native-hidden-select {
+      display: none !important;
+    }
+
+    .fancy-dd-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .fancy-dd-btn {
+      background: #ffffff;
+      color: #2b2d42;
+      padding: 11px 15px;
+      border-radius: 15px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .fancy-dd-btn:hover,
+    .fancy-dd-wrap.open .fancy-dd-btn {
+      border-color: #2b2d42;
+    }
+
+    .fancy-dd-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .fancy-dd-icon {
+      font-size: 11px;
+      color: #d90429;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .fancy-dd-wrap.open .fancy-dd-icon {
+      transform: rotate(180deg);
+    }
+
+    .fancy-dd-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      min-width: 280px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+      border: 1px solid #edf2f4;
+      z-index: 9999;
+      overflow: hidden;
+      animation: ddPop 0.16s ease-out;
+    }
+
+    .fancy-dd-wrap.open .fancy-dd-menu {
+      display: block;
+    }
+
+    @keyframes ddPop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fancy-dd-search-box {
+      padding: 10px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #edf2f4;
+    }
+
+    .fancy-dd-search {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #dee2e6;
+      font-size: 13px;
+      outline: none;
+      color: #2b2d42;
+    }
+
+    .fancy-dd-search:focus {
+      border-color: #d90429;
+    }
+
+    .fancy-dd-list {
+      max-height: 270px;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+      padding: 6px;
+    }
+
+    .fancy-dd-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .fancy-dd-list::-webkit-scrollbar-thumb {
+      background: #d0d7de;
+      border-radius: 10px;
+    }
+
+    .fancy-dd-item {
+      padding: 9px 12px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2b2d42;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-bottom: 2px;
+      line-height: 1.4;
+    }
+
+    .fancy-dd-item:hover {
+      background: #fff0f3;
+      color: #d90429;
+      padding-left: 16px;
+    }
+
+    .fancy-dd-item.active {
+      background: linear-gradient(135deg, #ef233c, #d90429);
+      color: #ffffff;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -53,7 +191,7 @@
       <span>Real student reviews</span>
     </div>
 
-    <div class="opinions-list" id="opinionsContainer"></div>
+    <div class="opinions-list" id="reviewsContainer"></div>
   </main>
 
   <nav class="navbar">
@@ -73,40 +211,63 @@
       "Data Analytics & AI (تحليل البيانات والذكاء الاصطناعي)",
       "Computer Engineering (هندسة الحاسوب)",
       "Network Engineering (هندسة الشبكات)",
+      "Informatics Engineering (هندسة المعلوماتية)",
+      "Cloud Computing (الحوسبة السحابية)",
+      "ICT - Programming (تقنية المعلومات - البرمجة)",
+      "ICT - Networking (تقنية المعلومات - الشبكات)",
+      "Distributed Systems & Multimedia (الأنظمة الموزعة والوسائط)",
+      "Mobile & Network Engineering (هندسة الشبكات والهواتف)",
       "Civil Engineering (الهندسة المدنية)",
       "Mechanical Engineering (الهندسة الميكانيكية)",
       "Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)",
+      "Electromechanical Engineering (الهندسة الكهروميكانيكية)",
       "Chemical Engineering (الهندسة الكيميائية)",
       "Mechatronics Engineering (هندسة الميكاترونكس)",
       "Industrial Engineering (الهندسة الصناعية)",
       "Environmental Engineering (الهندسة البيئية)",
+      "Architectural Engineering (الهندسة المعمارية)",
+      "Automotive Engineering (هندسة السيارات)",
+      "Process Instrumentation & Control Engineering (هندسة الأجهزة الدقيقة والتحكم)",
+      "Quantity Surveying (مسح الكميات)",
       "Architecture (العمارة)",
       "Interior Design (التصميم الداخلي)",
+      "Landscape Architecture (عمارة البيئة)",
       "Graphic Design (التصميم الجرافيكي)",
       "Multimedia & Visual Design (الوسائط المتعددة والتصميم المرئي)",
+      "Web Media & Creative Media (إعلام الويب والإعلام الإبداعي)",
+      "Film & Animation (الأفلام والرسوم المتحركة)",
       "Fashion Design (تصميم الأزياء)",
       "Medicine - MD (الطب البشري)",
       "Nursing (التمريض)",
+      "Midwifery (القبالة)",
       "Pharmacy (الصيدلة)",
       "Physiotherapy (العلاج الطبيعي)",
       "Medical Laboratory Sciences (علوم المختبرات الطبية)",
+      "Radiologic Technology (تقنية الأشعة)",
       "Law / LLB (الحقوق / القانون)",
       "Political Science (العلوم السياسية)",
       "Business Administration & Management (إدارة الأعمال)",
       "International Business (الأعمال الدولية)",
+      "Accounting (المحاسبة)",
       "Accounting & Finance (المحاسبة والتمويل)",
       "Banking & Finance (المصارف والتمويل)",
       "Islamic Finance (التمويل الإسلامي)",
+      "FinTech & Digital Innovation (التقنية المالية والابتكار)",
+      "Business Analytics (تحليلات الأعمال)",
       "Marketing & Digital Media (التسويق والإعلام الرقمي)",
       "Human Resource Management (إدارة الموارد البشرية)",
       "International Logistics Management (إدارة اللوجستيات)",
       "Economics (الاقتصاد)",
       "Mass Communication & Media (الإعلام والعلاقات العامة)",
+      "Digital Media (الإعلام الرقمي)",
       "English Language & Literature (اللغة الإنجليزية وآدابها)",
+      "American Studies (الدراسات الأمريكية)",
       "Arabic Language & Islamic Studies (اللغة العربية والدراسات الإسلامية)",
+      "History (التاريخ)",
       "Psychology & Sociology (علم النفس وعلم الاجتماع)",
       "Education & Teaching (التربية والتعليم)",
       "Mathematics & Actuarial Science (الرياضيات والعلوم الاكتوارية)",
+      "Statistics & Operations Research (الإحصاء وبحوث العمليات)",
       "Physics, Chemistry & Biology (العلوم الأساسية)",
       "Physical Education (التربية الرياضية)",
       "Tourism (السياحة)"
@@ -156,7 +317,7 @@
 
     function renderOpinions() {
       const selectedMajor = document.getElementById('majorFilter').value;
-      const container = document.getElementById('opinionsContainer');
+      const container = document.getElementById('reviewsContainer');
       const countEl = document.getElementById('opinionsCount');
       
       const userList = getUserOpinions().map((item, i) => ({ ...item, realIndex: i, isDefault: false }));
@@ -195,221 +356,78 @@
     }
 
     renderOpinions();
-  </script>
-<style>
-  /* إخفاء شكل القائمة الافتراضي فقط مع إبقائها تعمل في الخلفية */
-  select.native-hidden-select {
-    display: none !important;
-  }
 
-  .fancy-dd-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 0;
-  }
+    // تفعيل القائمة المنسدلة الكشخة
+    (function upgradeMajorDropdownOnly() {
+      const targetSelect = document.getElementById('majorFilter');
+      if (!targetSelect) return;
 
-  .fancy-dd-btn {
-    background: #ffffff;
-    color: #2b2d42;
-    padding: 11px 15px;
-    border-radius: 15px;
-    font-size: 13.5px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
-    user-select: none;
-  }
+      targetSelect.classList.add('native-hidden-select');
 
-  .fancy-dd-btn:hover,
-  .fancy-dd-wrap.open .fancy-dd-btn {
-    border-color: #2b2d42;
-  }
+      const wrap = document.createElement('div');
+      wrap.className = 'fancy-dd-wrap';
 
-  .fancy-dd-label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex: 1;
-  }
+      const btn = document.createElement('div');
+      btn.className = 'fancy-dd-btn';
+      btn.innerHTML = `
+        <span class="fancy-dd-label">${targetSelect.options[targetSelect.selectedIndex].text}</span>
+        <span class="fancy-dd-icon">▼</span>
+      `;
 
-  .fancy-dd-icon {
-    font-size: 11px;
-    color: #d90429;
-    transition: transform 0.25s ease;
-    flex-shrink: 0;
-  }
+      const menu = document.createElement('div');
+      menu.className = 'fancy-dd-menu';
+      menu.innerHTML = `
+        <div class="fancy-dd-search-box">
+          <input type="text" class="fancy-dd-search" placeholder="Search major...">
+        </div>
+        <ul class="fancy-dd-list"></ul>
+      `;
 
-  .fancy-dd-wrap.open .fancy-dd-icon {
-    transform: rotate(180deg);
-  }
+      const ul = menu.querySelector('.fancy-dd-list');
+      const searchInput = menu.querySelector('.fancy-dd-search');
+      const labelSpan = btn.querySelector('.fancy-dd-label');
 
-  .fancy-dd-menu {
-    display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    width: 100%;
-    min-width: 280px;
-    background: #ffffff;
-    border-radius: 18px;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
-    border: 1px solid #edf2f4;
-    z-index: 9999;
-    overflow: hidden;
-    animation: ddPop 0.16s ease-out;
-  }
+      Array.from(targetSelect.options).forEach((opt, idx) => {
+        const li = document.createElement('li');
+        li.className = 'fancy-dd-item' + (idx === targetSelect.selectedIndex ? ' active' : '');
+        li.textContent = opt.text;
 
-  .fancy-dd-wrap.open .fancy-dd-menu {
-    display: block;
-  }
+        li.addEventListener('click', (e) => {
+          e.stopPropagation();
+          targetSelect.value = opt.value;
+          labelSpan.textContent = opt.text;
 
-  @keyframes ddPop {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+          ul.querySelectorAll('.fancy-dd-item').forEach(el => el.classList.remove('active'));
+          li.classList.add('active');
+          wrap.classList.remove('open');
 
-  .fancy-dd-search-box {
-    padding: 10px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #edf2f4;
-  }
+          targetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        });
 
-  .fancy-dd-search {
-    width: 100%;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1.5px solid #dee2e6;
-    font-size: 13px;
-    outline: none;
-    color: #2b2d42;
-  }
+        ul.appendChild(li);
+      });
 
-  .fancy-dd-search:focus {
-    border-color: #d90429;
-  }
-
-  .fancy-dd-list {
-    max-height: 270px;
-    overflow-y: auto;
-    list-style: none;
-    margin: 0;
-    padding: 6px;
-  }
-
-  .fancy-dd-list::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .fancy-dd-list::-webkit-scrollbar-thumb {
-    background: #d0d7de;
-    border-radius: 10px;
-  }
-
-  .fancy-dd-item {
-    padding: 9px 12px;
-    border-radius: 11px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #2b2d42;
-    cursor: pointer;
-    transition: 0.15s;
-    margin-bottom: 2px;
-    line-height: 1.4;
-  }
-
-  .fancy-dd-item:hover {
-    background: #fff0f3;
-    color: #d90429;
-    padding-left: 16px;
-  }
-
-  .fancy-dd-item.active {
-    background: linear-gradient(135deg, #ef233c, #d90429);
-    color: #ffffff;
-    font-weight: 700;
-  }
-</style>
-
-<script>
-  (function upgradeMajorDropdownOnly() {
-    // يستهدف فقط قائمة الفلترة العلوية داخل البوكس الأحمر بدون لمس باقي الصفحة
-    const targetSelect = document.querySelector('main select, .search-card select, .filter-card select, select');
-    if (!targetSelect) return;
-
-    targetSelect.classList.add('native-hidden-select');
-
-    const wrap = document.createElement('div');
-    wrap.className = 'fancy-dd-wrap';
-
-    const btn = document.createElement('div');
-    btn.className = 'fancy-dd-btn';
-    btn.innerHTML = `
-      <span class="fancy-dd-label">${targetSelect.options[targetSelect.selectedIndex].text}</span>
-      <span class="fancy-dd-icon">▼</span>
-    `;
-
-    const menu = document.createElement('div');
-    menu.className = 'fancy-dd-menu';
-    menu.innerHTML = `
-      <div class="fancy-dd-search-box">
-        <input type="text" class="fancy-dd-search" placeholder="Search major...">
-      </div>
-      <ul class="fancy-dd-list"></ul>
-    `;
-
-    const ul = menu.querySelector('.fancy-dd-list');
-    const searchInput = menu.querySelector('.fancy-dd-search');
-    const labelSpan = btn.querySelector('.fancy-dd-label');
-
-    // نسخ نفس التخصصات الموجودة عندك بالضبط بدون زيادة أو نقصان
-    Array.from(targetSelect.options).forEach((opt, idx) => {
-      const li = document.createElement('li');
-      li.className = 'fancy-dd-item' + (idx === targetSelect.selectedIndex ? ' active' : '');
-      li.textContent = opt.text;
-
-      li.addEventListener('click', (e) => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        targetSelect.value = opt.value;
-        labelSpan.textContent = opt.text;
-
-        ul.querySelectorAll('.fancy-dd-item').forEach(el => el.classList.remove('active'));
-        li.classList.add('active');
-        wrap.classList.remove('open');
-
-        // تشغيل دالة الفلترة الأصلية الموجودة في صفحتك تلقائياً
-        targetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        wrap.classList.toggle('open');
+        if (wrap.classList.contains('open')) searchInput.focus();
       });
 
-      ul.appendChild(li);
-    });
+      menu.addEventListener('click', (e) => e.stopPropagation());
 
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      wrap.classList.toggle('open');
-      if (wrap.classList.contains('open')) searchInput.focus();
-    });
-
-    menu.addEventListener('click', (e) => e.stopPropagation());
-
-    searchInput.addEventListener('keyup', () => {
-      const q = searchInput.value.toLowerCase().trim();
-      ul.querySelectorAll('.fancy-dd-item').forEach(li => {
-        li.style.display = li.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+      searchInput.addEventListener('keyup', () => {
+        const q = searchInput.value.toLowerCase().trim();
+        ul.querySelectorAll('.fancy-dd-item').forEach(li => {
+          li.style.display = li.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+        });
       });
-    });
 
-    document.addEventListener('click', () => wrap.classList.remove('open'));
+      document.addEventListener('click', () => wrap.classList.remove('open'));
 
-    wrap.appendChild(btn);
-    wrap.appendChild(menu);
-    targetSelect.parentNode.insertBefore(wrap, targetSelect);
-  })();
-</script>
+      wrap.appendChild(btn);
+      wrap.appendChild(menu);
+      targetSelect.parentNode.insertBefore(wrap, targetSelect);
+    })();
+  </script>
 </body>
 </html>
