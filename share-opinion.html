@@ -24,7 +24,7 @@
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
 
-    /* ستايل القائمة المنسدلة الكشخة للتخصصات فقط */
+    /* ستايل القائمة المنسدلة الكشخة */
     select.native-hidden-select {
       display: none !important;
     }
@@ -318,9 +318,9 @@
       window.location.href = 'opinions.html';
     }
 
-    // تحويل حقل التخصص فقط إلى القائمة الكشخة القابلة للبحث
-    (function upgradeShareMajorDropdown() {
-      const targetSelect = document.getElementById('opMajor');
+    // تحويل قائمتي التخصص والحالة إلى القائمة الكشخة
+    function upgradeDropdown(selectId, withSearch) {
+      const targetSelect = document.getElementById(selectId);
       if (!targetSelect) return;
 
       targetSelect.classList.add('native-hidden-select');
@@ -338,9 +338,7 @@
       const menu = document.createElement('div');
       menu.className = 'fancy-dd-menu';
       menu.innerHTML = `
-        <div class="fancy-dd-search-box">
-          <input type="text" class="fancy-dd-search" placeholder="Search major...">
-        </div>
+        ${withSearch ? `<div class="fancy-dd-search-box"><input type="text" class="fancy-dd-search" placeholder="Search major..."></div>` : ''}
         <ul class="fancy-dd-list"></ul>
       `;
 
@@ -368,25 +366,35 @@
 
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        document.querySelectorAll('.fancy-dd-wrap').forEach(w => {
+          if (w !== wrap) w.classList.remove('open');
+        });
         wrap.classList.toggle('open');
-        if (wrap.classList.contains('open')) searchInput.focus();
+        if (wrap.classList.contains('open') && searchInput) searchInput.focus();
       });
 
       menu.addEventListener('click', (e) => e.stopPropagation());
 
-      searchInput.addEventListener('keyup', () => {
-        const q = searchInput.value.toLowerCase().trim();
-        ul.querySelectorAll('.fancy-dd-item').forEach(li => {
-          li.style.display = li.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+      if (searchInput) {
+        searchInput.addEventListener('keyup', () => {
+          const q = searchInput.value.toLowerCase().trim();
+          ul.querySelectorAll('.fancy-dd-item').forEach(li => {
+            li.style.display = li.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+          });
         });
-      });
-
-      document.addEventListener('click', () => wrap.classList.remove('open'));
+      }
 
       wrap.appendChild(btn);
       wrap.appendChild(menu);
       targetSelect.parentNode.insertBefore(wrap, targetSelect);
-    })();
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.fancy-dd-wrap').forEach(w => w.classList.remove('open'));
+    });
+
+    upgradeDropdown('opMajor', true);
+    upgradeDropdown('opStatus', false);
   </script>
 </body>
 </html>
