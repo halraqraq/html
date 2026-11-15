@@ -661,6 +661,197 @@
 
     convertMajorsToPageLinks();
   </script>
+<style>
+  select.native-hidden-filter {
+    display: none !important;
+  }
 
+  .fancy-filter-wrap {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fancy-filter-btn {
+    background-color: #ffffff;
+    color: #2b2d42;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .fancy-filter-btn:hover,
+  .fancy-filter-wrap.open .fancy-filter-btn {
+    border-color: #2b2d42;
+  }
+
+  .fancy-filter-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  .fancy-filter-arrow {
+    font-size: 11px;
+    color: #d90429;
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .fancy-filter-wrap.open .fancy-filter-arrow {
+    transform: rotate(180deg);
+  }
+
+  .fancy-filter-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    min-width: 185px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+    border: 1px solid #edf2f4;
+    z-index: 9999;
+    padding: 6px;
+    animation: filterPop 0.15s ease-out;
+  }
+
+  .fancy-filter-wrap.open .fancy-filter-menu {
+    display: block;
+  }
+
+  @keyframes filterPop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fancy-filter-item {
+    padding: 10px 13px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #2b2d42;
+    cursor: pointer;
+    transition: 0.15s;
+    margin-bottom: 2px;
+  }
+
+  .fancy-filter-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .fancy-filter-item:hover {
+    background-color: #fff0f3;
+    color: #d90429;
+    padding-left: 17px;
+  }
+
+  .fancy-filter-item.active {
+    background: linear-gradient(135deg, #ef233c, #d90429);
+    color: #ffffff;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  (function upgradeBrowseFiltersOnly() {
+    const filterIds = ['langFilter', 'typeFilter', 'feeFilter'];
+    const allWraps = [];
+
+    filterIds.forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+
+      sel.classList.add('native-hidden-filter');
+
+      const wrap = document.createElement('div');
+      wrap.className = 'fancy-filter-wrap';
+      allWraps.push(wrap);
+
+      const btn = document.createElement('div');
+      btn.className = 'fancy-filter-btn';
+      btn.innerHTML = `
+        <span class="fancy-filter-label">${sel.options[sel.selectedIndex].text}</span>
+        <span class="fancy-filter-arrow">▼</span>
+      `;
+
+      const menu = document.createElement('div');
+      menu.className = 'fancy-filter-menu';
+
+      const labelSpan = btn.querySelector('.fancy-filter-label');
+
+      Array.from(sel.options).forEach((opt, idx) => {
+        const item = document.createElement('div');
+        item.className = 'fancy-filter-item' + (idx === sel.selectedIndex ? ' active' : '');
+        item.textContent = opt.text;
+        item.dataset.val = opt.value;
+
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          sel.value = opt.value;
+          labelSpan.textContent = opt.text;
+
+          menu.querySelectorAll('.fancy-filter-item').forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+          wrap.classList.remove('open');
+
+          sel.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        menu.appendChild(item);
+      });
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = wrap.classList.contains('open');
+        allWraps.forEach(w => w.classList.remove('open'));
+        if (!isOpen) wrap.classList.add('open');
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(menu);
+      sel.parentNode.insertBefore(wrap, sel);
+
+      // مزامنة تلقائية عند الضغط على زر Reset
+      sel._syncCustomUI = function() {
+        const currentOpt = sel.options[sel.selectedIndex];
+        labelSpan.textContent = currentOpt.text;
+        menu.querySelectorAll('.fancy-filter-item').forEach(el => {
+          el.classList.toggle('active', el.dataset.val === sel.value);
+        });
+      };
+    });
+
+    document.addEventListener('click', () => {
+      allWraps.forEach(w => w.classList.remove('open'));
+    });
+
+    // ربط دالة resetFilters الأصلية لتحديث شكل القوائم عند التصفير
+    if (typeof window.resetFilters === 'function') {
+      const origReset = window.resetFilters;
+      window.resetFilters = function() {
+        origReset();
+        filterIds.forEach(id => {
+          const sel = document.getElementById(id);
+          if (sel && sel._syncCustomUI) sel._syncCustomUI();
+        });
+      };
+    }
+  })();
+</script>
 </body>
 </html>
