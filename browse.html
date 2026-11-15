@@ -27,7 +27,7 @@
 
     .results-info { font-size: 13px; font-weight: 600; color: #6c757d; padding: 0 5px; display: flex; justify-content: space-between; }
 
-    /* بطاقات الجامعات القابلة للفتح (Details/Summary) */
+    /* بطاقات الجامعات القابلة للفتح */
     .results-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
     
     details.uni-card { background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; overflow: hidden; transition: border-color 0.2s; }
@@ -39,7 +39,8 @@
 
     .uni-info { flex: 1; }
     .uni-title { font-size: 15px; font-weight: 700; color: #2b2d42; display: block; margin-bottom: 4px; }
-    .uni-meta { font-size: 12px; color: #8d99ae; }
+    .uni-meta { font-size: 12px; color: #8d99ae; display: block; line-height: 1.5; }
+    .fee-tag { display: inline-block; background-color: #fff0f3; color: #d90429; padding: 2px 8px; border-radius: 8px; font-weight: 600; font-size: 11px; margin-top: 4px; }
 
     .view-badge { background-color: #d90429; color: white; padding: 8px 16px; border-radius: 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
     details[open] .view-badge { background-color: #2b2d42; }
@@ -84,6 +85,15 @@
         </select>
       </div>
 
+      <!-- فلتر رينج الأسعار -->
+      <select id="feeFilter" class="search-select" onchange="filterUniversities()">
+        <option value="all">All Annual Tuition Fees (BHD)</option>
+        <option value="under1000">Under 1,000 BHD / Year (مدعومة / حكومية)</option>
+        <option value="1000to3000">1,000 – 3,000 BHD / Year</option>
+        <option value="3000to5000">3,000 – 5,000 BHD / Year</option>
+        <option value="above5000">Above 5,000 BHD / Year</option>
+      </select>
+
       <div class="action-row">
         <button type="button" class="search-submit-btn" onclick="filterUniversities()">🔍 Search</button>
         <button type="button" class="reset-btn" onclick="resetFilters()">Reset</button>
@@ -97,15 +107,16 @@
 
     <div id="noResults" class="no-results">No universities or majors found matching your search.</div>
 
-    <!-- قائمة الجامعات الـ 16 مع كافة تخصصاتها -->
+    <!-- قائمة الجامعات الـ 16 -->
     <div class="results-list" id="uniList">
 
       <!-- 1. UOB -->
-      <details class="uni-card" data-type="Public" data-lang="English Arabic">
+      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="under1000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University of Bahrain (UOB)</span>
             <span class="uni-meta">🏛️ Public • 📍 Sakhir / Isa Town • 48 Majors</span>
+            <span class="fee-tag">💰 ~240 – 480 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -166,11 +177,12 @@
       </details>
 
       <!-- 2. Bahrain Polytechnic -->
-      <details class="uni-card" data-type="Public" data-lang="English">
+      <details class="uni-card" data-type="Public" data-lang="English" data-fee="under1000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Bahrain Polytechnic</span>
             <span class="uni-meta">🏛️ Public • 📍 Isa Town • 18 Majors</span>
+            <span class="fee-tag">💰 ~240 – 360 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -201,11 +213,12 @@
       </details>
 
       <!-- 3. UTB -->
-      <details class="uni-card" data-type="Private" data-lang="English">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University of Technology Bahrain (UTB)</span>
             <span class="uni-meta">🏛️ Private • 📍 Salmabad • 10 Majors</span>
+            <span class="fee-tag">💰 ~3,200 – 4,200 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -228,11 +241,12 @@
       </details>
 
       <!-- 4. AGU -->
-      <details class="uni-card" data-type="Public" data-lang="English Arabic">
+      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="above5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Arabian Gulf University (AGU)</span>
-            <span class="uni-meta">🏛️ Public • 📍 Manama • 8 Majors</span>
+            <span class="uni-meta">🏛️ Public (GCC) • 📍 Manama • 8 Majors</span>
+            <span class="fee-tag">💰 ~5,500 – 7,500 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -253,11 +267,12 @@
       </details>
 
       <!-- 5. RCSI Bahrain -->
-      <details class="uni-card" data-type="Private" data-lang="English">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">RCSI Bahrain (Royal College of Surgeons in Ireland)</span>
             <span class="uni-meta">🏛️ Private • 📍 Busaiteen • 4 Majors</span>
+            <span class="fee-tag">💰 ~6,000 – 14,500 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -274,11 +289,12 @@
       </details>
 
       <!-- 6. AUBH -->
-      <details class="uni-card" data-type="Private" data-lang="English">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">American University of Bahrain (AUBH)</span>
             <span class="uni-meta">🏛️ Private • 📍 Riffa • 11 Majors</span>
+            <span class="fee-tag">💰 ~5,200 – 6,000 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -302,11 +318,12 @@
       </details>
 
       <!-- 7. ASU -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Applied Science University (ASU)</span>
             <span class="uni-meta">🏛️ Private • 📍 East Al-Ekir • 14 Majors</span>
+            <span class="fee-tag">💰 ~3,000 – 4,800 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -333,11 +350,12 @@
       </details>
 
       <!-- 8. Ahlia University -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Ahlia University</span>
             <span class="uni-meta">🏛️ Private • 📍 Manama • 11 Majors</span>
+            <span class="fee-tag">💰 ~3,300 – 4,200 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -361,11 +379,12 @@
       </details>
 
       <!-- 9. Kingdom University -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Kingdom University (KU)</span>
             <span class="uni-meta">🏛️ Private • 📍 Riffa • 7 Majors</span>
+            <span class="fee-tag">💰 ~2,400 – 3,000 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -385,11 +404,12 @@
       </details>
 
       <!-- 10. Gulf University -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Gulf University</span>
             <span class="uni-meta">🏛️ Private • 📍 Sanad • 9 Majors</span>
+            <span class="fee-tag">💰 ~2,400 – 3,000 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -411,11 +431,12 @@
       </details>
 
       <!-- 11. BUB -->
-      <details class="uni-card" data-type="Private" data-lang="English">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">British University of Bahrain (BUB)</span>
             <span class="uni-meta">🏛️ Private • 📍 Saar • 14 Majors</span>
+            <span class="fee-tag">💰 ~5,200 – 5,800 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -442,11 +463,12 @@
       </details>
 
       <!-- 12. AOU -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Arab Open University (AOU)</span>
             <span class="uni-meta">🏛️ Private • 📍 A'ali • 9 Majors</span>
+            <span class="fee-tag">💰 ~1,400 – 2,000 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -468,11 +490,12 @@
       </details>
 
       <!-- 13. RUW -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Royal University for Women (RUW)</span>
             <span class="uni-meta">🏛️ Private • 📍 Riffa • 11 Majors</span>
+            <span class="fee-tag">💰 ~3,600 – 4,500 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -496,11 +519,12 @@
       </details>
 
       <!-- 14. UCB -->
-      <details class="uni-card" data-type="Private" data-lang="English">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="1000to3000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University College of Bahrain (UCB)</span>
             <span class="uni-meta">🏛️ Private • 📍 Saar • 8 Majors</span>
+            <span class="fee-tag">💰 ~2,400 – 3,000 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -521,11 +545,12 @@
       </details>
 
       <!-- 15. BIBF -->
-      <details class="uni-card" data-type="Private" data-lang="English">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Bahrain Institute of Banking and Finance (BIBF)</span>
             <span class="uni-meta">🏛️ Private • 📍 Bahrain Bay • 7 Majors</span>
+            <span class="fee-tag">💰 ~3,800 – 4,800 BHD / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -545,11 +570,12 @@
       </details>
 
       <!-- 16. BTC -->
-      <details class="uni-card" data-type="Public" data-lang="English Arabic">
+      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="under1000">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Bahrain Teacher College (BTC)</span>
             <span class="uni-meta">🏛️ Public • 📍 Sakhir • 4 Majors</span>
+            <span class="fee-tag">💰 Free / Sponsored (مدعومة بالكامل)</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
@@ -580,6 +606,7 @@
       var majorInput = document.getElementById('majorSearch').value.toLowerCase().trim();
       var langSelect = document.getElementById('langFilter').value;
       var typeSelect = document.getElementById('typeFilter').value;
+      var feeSelect = document.getElementById('feeFilter').value;
 
       var cards = document.querySelectorAll('.uni-card');
       var visibleCount = 0;
@@ -589,16 +616,17 @@
         var majorsText = card.querySelector('.majors-list').textContent.toLowerCase();
         var cardType = card.getAttribute('data-type');
         var cardLang = card.getAttribute('data-lang');
+        var cardFee = card.getAttribute('data-fee');
 
         var matchUni = title.indexOf(uniInput) > -1;
         var matchMajor = majorInput === '' || majorsText.indexOf(majorInput) > -1;
         var matchLang = langSelect === 'all' || cardLang.indexOf(langSelect) > -1;
         var matchType = typeSelect === 'all' || cardType === typeSelect;
+        var matchFee = feeSelect === 'all' || cardFee === feeSelect;
 
-        if (matchUni && matchMajor && matchLang && matchType) {
+        if (matchUni && matchMajor && matchLang && matchType && matchFee) {
           card.style.display = 'block';
           visibleCount++;
-          // فتح قائمة التخصصات تلقائياً إذا كان المستخدم يبحث عن تخصص محدد
           if (majorInput !== '') {
             card.setAttribute('open', 'true');
           }
@@ -616,6 +644,7 @@
       document.getElementById('majorSearch').value = '';
       document.getElementById('langFilter').value = 'all';
       document.getElementById('typeFilter').value = 'all';
+      document.getElementById('feeFilter').value = 'all';
 
       var cards = document.querySelectorAll('.uni-card');
       cards.forEach(function(card) {
