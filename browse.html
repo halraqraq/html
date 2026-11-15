@@ -3,36 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Official Study Plans & Majors</title>
+  <title>Path Finder BH - Browse Universities & Majors</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
     .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
     .container { flex: 1; max-width: 560px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
     
-    /* صندوق البحث والفلترة */
     .search-card { background: linear-gradient(135deg, #ef233c, #d90429); padding: 20px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 20px rgba(217, 4, 41, 0.2); }
     .search-input, .search-select { background-color: #ffffff; border: 2px solid transparent; padding: 12px 16px; border-radius: 16px; width: 100%; font-size: 14px; outline: none; color: #2b2d42; }
     .search-input:focus, .search-select:focus { border-color: #2b2d42; }
-    .search-input::placeholder { color: #8d99ae; }
+    .filter-row, .action-row { display: flex; gap: 10px; }
     
-    .filter-row { display: flex; gap: 10px; }
-    .action-row { display: flex; gap: 10px; margin-top: 2px; }
-    
-    .search-submit-btn { flex: 2; background-color: #2b2d42; color: white; border: none; padding: 12px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-    .search-submit-btn:hover { background-color: #1a1b29; }
-
-    .reset-btn { flex: 1; background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-    .reset-btn:hover { background-color: rgba(255, 255, 255, 0.35); }
+    .search-submit-btn { flex: 2; background-color: #2b2d42; color: white; border: none; padding: 12px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .reset-btn { flex: 1; background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
     .results-info { font-size: 13px; font-weight: 600; color: #6c757d; padding: 0 5px; display: flex; justify-content: space-between; }
-
-    /* بطاقات الجامعات */
     .results-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    details.uni-card { background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; overflow: hidden; transition: border-color 0.2s; }
-    details.uni-card:hover { border-color: #d90429; }
-    details.uni-card[open] { border-color: #d90429; box-shadow: 0 6px 18px rgba(217, 4, 41, 0.12); }
-
+    
+    details.uni-card { background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; overflow: hidden; }
+    details.uni-card[open] { border-color: #d90429; }
     summary.uni-summary { list-style: none; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 10px; }
     summary.uni-summary::-webkit-details-marker { display: none; }
 
@@ -45,97 +35,47 @@
     .view-badge { background-color: #d90429; color: white; padding: 8px 16px; border-radius: 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
     details[open] .view-badge { background-color: #2b2d42; }
 
-    /* قائمة التخصصات */
     .uni-body { padding: 0 18px 18px 18px; border-top: 1px solid #f1f3f5; background-color: #fcfcfc; }
     .majors-title { font-size: 13px; font-weight: 700; color: #d90429; margin: 12px 0 8px 0; }
-    .majors-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-    .majors-list li { background: #ffffff; padding: 9px 12px; border-radius: 12px; font-size: 12.5px; border-left: 3.5px solid #d90429; border-top: 1px solid #f1f3f5; border-right: 1px solid #f1f3f5; border-bottom: 1px solid #f1f3f5; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .major-name-text { flex: 1; line-height: 1.35; }
+    .majors-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
     
-    .plan-btn { background-color: #fff0f3; color: #d90429; border: 1px solid #ffccd5; padding: 6px 10px; border-radius: 9px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; flex-shrink: 0; }
-    .plan-btn:hover { background-color: #d90429; color: white; border-color: #d90429; }
-
-    .website-btn { display: block; text-align: center; background-color: #2b2d42; color: white; text-decoration: none; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; }
-    .website-btn:hover { background-color: #d90429; }
+    .major-link { background: #ffffff; padding: 10px 14px; border-radius: 12px; font-size: 12.5px; border-left: 3.5px solid #d90429; border-top: 1px solid #f1f3f5; border-right: 1px solid #f1f3f5; border-bottom: 1px solid #f1f3f5; font-weight: 600; color: #2b2d42; text-decoration: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; transition: 0.2s; }
+    .major-link:hover { background-color: #fff0f3; border-color: #d90429; color: #d90429; }
+    .arrow-badge { font-size: 11px; background: #fff0f3; color: #d90429; padding: 4px 9px; border-radius: 8px; font-weight: 700; white-space: nowrap; }
 
     .no-results { display: none; text-align: center; padding: 30px; color: #8d99ae; font-size: 14px; background: white; border-radius: 20px; }
 
-    /* نافذة الخطة الدراسية الرسمية */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.68); z-index: 1000; justify-content: center; align-items: center; padding: 14px; }
-    .modal-box { background: white; width: 100%; max-width: 560px; border-radius: 24px; padding: 20px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.28); animation: popIn 0.2s ease-out; }
-    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    
-    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #edf2f4; padding-bottom: 10px; margin-bottom: 10px; }
-    .modal-title { font-size: 15.5px; font-weight: 700; color: #d90429; line-height: 1.35; }
-    .modal-subtitle { font-size: 12px; color: #495057; font-weight: 600; margin-top: 2px; }
-    .close-btn { background: #edf2f4; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; color: #2b2d42; flex-shrink: 0; }
-    .close-btn:hover { background: #d90429; color: white; }
-
-    .plan-meta-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-    .plan-chip { background: #f8f9fa; border: 1px solid #dee2e6; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #2b2d42; }
-    .plan-chip.system-chip { background: #fff0f3; border-color: #ffccd5; color: #d90429; }
-
-    .plan-scroll { overflow-y: auto; flex: 1; padding-right: 4px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
-    
-    .year-block { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 16px; padding: 12px; }
-    .year-header { font-size: 13.5px; font-weight: 800; color: #2b2d42; margin-bottom: 8px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
-    
-    .term-group { margin-bottom: 10px; }
-    .term-group:last-child { margin-bottom: 0; }
-    .term-title { font-size: 12px; font-weight: 700; color: #d90429; margin-bottom: 5px; }
-    
-    .courses-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
-    .courses-list li { background: white; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; color: #2b2d42; border-left: 3px solid #2b2d42; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-    .course-code { font-weight: 700; color: #d90429; font-family: monospace; font-size: 11px; margin-right: 6px; }
-    .cr-tag { font-size: 10.5px; color: #6c757d; font-weight: 700; white-space: nowrap; background: #f1f3f5; padding: 2px 6px; border-radius: 6px; }
-
-    /* قسم مقررات الـ Electives المستقل في الأسفل */
-    .electives-box { background: #fff8f9; border: 1.5px dashed #d90429; border-radius: 16px; padding: 12px; }
-    .electives-title { font-size: 13px; font-weight: 800; color: #d90429; margin-bottom: 6px; }
-    .electives-note { font-size: 11.5px; color: #495057; margin-bottom: 8px; }
-
-    .catalog-notice { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 16px; padding: 16px; text-align: center; font-size: 13px; color: #495057; line-height: 1.6; }
-
-    .official-plan-link { display: block; text-align: center; background: #2b2d42; color: white; text-decoration: none; padding: 11px; border-radius: 12px; font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
-    .official-plan-link:hover { background: #d90429; }
-
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
-    .navbar a:hover { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <header class="header">Browse Universities & Study Plans</header>
+  <header class="header">Browse Universities & Majors</header>
 
   <main class="container">
-    <!-- قسم البحث -->
     <section class="search-card">
       <input type="text" id="uniSearch" class="search-input" placeholder="Search University (e.g., UOB, UTB, Polytechnic)..." onkeyup="filterUniversities()">
       <input type="text" id="majorSearch" class="search-input" placeholder="Search ANY Major (e.g., Business Informatics, Law)..." onkeyup="filterUniversities()">
-
       <div class="filter-row">
         <select id="langFilter" class="search-select" onchange="filterUniversities()">
           <option value="all">All Languages</option>
           <option value="English">English</option>
           <option value="Arabic">Arabic</option>
         </select>
-
         <select id="typeFilter" class="search-select" onchange="filterUniversities()">
           <option value="all">All Sectors</option>
           <option value="Public">Public (حكومية)</option>
           <option value="Private">Private (خاصة)</option>
         </select>
       </div>
-
       <select id="feeFilter" class="search-select" onchange="filterUniversities()">
         <option value="all">All Annual Tuition Fees (BHD)</option>
-        <option value="under1000">Under 1,000 BHD / Year (مدعومة / حكومية)</option>
+        <option value="under1000">Under 1,000 BHD / Year</option>
         <option value="1000to3000">1,000 – 3,000 BHD / Year</option>
         <option value="3000to5000">3,000 – 5,000 BHD / Year</option>
         <option value="above5000">Above 5,000 BHD / Year</option>
       </select>
-
       <div class="action-row">
         <button type="button" class="search-submit-btn" onclick="filterUniversities()">🔍 Search</button>
         <button type="button" class="reset-btn" onclick="resetFilters()">Reset</button>
@@ -144,16 +84,14 @@
 
     <div class="results-info">
       <span id="resultsCount">16 Universities Available</span>
-      <span>Official Curriculum & Electives</span>
+      <span>Tap any major for details</span>
     </div>
 
     <div id="noResults" class="no-results">No universities or majors found matching your search.</div>
 
-    <!-- قائمة الجامعات الـ 16 -->
     <div class="results-list" id="uniList">
-
       <!-- 1. UOB -->
-      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="under1000" data-system="2 Semesters / Year" data-url="https://www.uob.edu.bh">
+      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="under1000" data-system="2 Semesters / Year" data-url="https://www.uob.edu.bh/admissions/undergraduate-programmes/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University of Bahrain (UOB)</span>
@@ -164,7 +102,7 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>B.Sc. in Computer Science (علوم الحاسوب)</li>
             <li>B.Sc. in Information Systems (نظم المعلومات)</li>
@@ -178,7 +116,7 @@
             <li>B.Sc. in Electrical Engineering (الهندسة الكهربائية)</li>
             <li>B.Sc. in Electronic Engineering (الهندسة الإلكترونية)</li>
             <li>B.Sc. in Chemical Engineering (الهندسة الكيميائية)</li>
-            <li>B.Sc. in Process Instrumentation & Control Engineering (هندسة الأجهزة الدقيقة والتحكم)</li>
+            <li>B.Sc. in Process Instrumentation & Control Engineering</li>
             <li>B.Sc. in Architecture (العمارة)</li>
             <li>B.Sc. in Interior Design (التصميم الداخلي)</li>
             <li>B.Sc. in Landscape Architecture (عمارة البيئة)</li>
@@ -191,19 +129,19 @@
             <li>Bachelor of Laws - LLB (الحقوق / القانون)</li>
             <li>B.A. in Mass Communication (الإعلام)</li>
             <li>B.A. in Digital Media (الإعلام الرقمي)</li>
-            <li>B.A. in English Language & Literature (اللغة الإنجليزية وآدابها)</li>
+            <li>B.A. in English Language & Literature (اللغة الإنجليزية)</li>
             <li>B.A. in American Studies (الدراسات الأمريكية)</li>
-            <li>B.A. in Arabic Language & Literature (اللغة العربية وآدابها)</li>
+            <li>B.A. in Arabic Language & Literature (اللغة العربية)</li>
             <li>B.A. in Islamic Studies (الدراسات الإسلامية)</li>
             <li>B.A. in History (التاريخ)</li>
             <li>B.A. in Sociology (علم الاجتماع)</li>
             <li>B.A. in Social Work (الخدمة الاجتماعية)</li>
             <li>B.A. in Psychology (علم النفس)</li>
-            <li>B.A. in Fine Arts & Graphic Design (الفنون الجميلة والتصميم الجرافيكي)</li>
+            <li>B.A. in Fine Arts & Graphic Design (التصميم الجرافيكي)</li>
             <li>B.A. in Tourism (السياحة)</li>
             <li>B.Sc. in Mathematics (الرياضيات)</li>
             <li>B.Sc. in Actuarial Science (العلوم الاكتوارية)</li>
-            <li>B.Sc. in Statistics & Operations Research (الإحصاء وبحوث العمليات)</li>
+            <li>B.Sc. in Statistics & Operations Research</li>
             <li>B.Sc. in Physics (الفيزياء)</li>
             <li>B.Sc. in Chemistry (الكيمياء)</li>
             <li>B.Sc. in Biology (علوم الحياة)</li>
@@ -215,12 +153,11 @@
             <li>B.Sc. in Physiotherapy (العلاج الطبيعي)</li>
             <li>B.Sc. in Radiologic Technology (تقنية الأشعة)</li>
           </ul>
-          <a href="https://www.uob.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 2. Bahrain Polytechnic -->
-      <details class="uni-card" data-type="Public" data-lang="English" data-fee="under1000" data-system="2 Semesters / Year" data-url="https://www.polytechnic.bh">
+      <details class="uni-card" data-type="Public" data-lang="English" data-fee="under1000" data-system="2 Semesters / Year" data-url="https://www.polytechnic.bh/programmes/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Bahrain Polytechnic</span>
@@ -231,33 +168,32 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>Bachelor of ICT - Programming (تقنية المعلومات - البرمجة)</li>
             <li>Bachelor of ICT - Networking (تقنية المعلومات - الشبكات)</li>
-            <li>Bachelor of ICT - Information Systems (تقنية المعلومات - نظم المعلومات)</li>
-            <li>Bachelor of ICT - Cyber Security (تقنية المعلومات - الأمن السيبراني)</li>
-            <li>Bachelor of Engineering Technology - Mechanical (تكنولوجيا الهندسة الميكانيكية)</li>
-            <li>Bachelor of Engineering Technology - Electrical (تكنولوجيا الهندسة الكهربائية)</li>
-            <li>Bachelor of Engineering Technology - Electronics (تكنولوجيا هندسة الإلكترونيات)</li>
-            <li>Bachelor of Engineering Technology - Electromechanical (تكنولوجيا الهندسة الكهروميكانيكية)</li>
-            <li>Bachelor of Business - Accounting (إدارة الأعمال - المحاسبة)</li>
-            <li>Bachelor of Business - Banking & Finance (إدارة الأعمال - البنوك والتمويل)</li>
-            <li>Bachelor of Business - Human Resource Management (إدارة الأعمال - الموارد البشرية)</li>
-            <li>Bachelor of Business - Management (إدارة الأعمال - الإدارة)</li>
-            <li>Bachelor of Business - Marketing (إدارة الأعمال - التسويق)</li>
-            <li>Bachelor of International Logistics Management (إدارة اللوجستيات العالمية)</li>
+            <li>Bachelor of ICT - Information Systems (نظم المعلومات)</li>
+            <li>Bachelor of ICT - Cyber Security (الأمن السيبراني)</li>
+            <li>Bachelor of Engineering Technology - Mechanical</li>
+            <li>Bachelor of Engineering Technology - Electrical</li>
+            <li>Bachelor of Engineering Technology - Electronics</li>
+            <li>Bachelor of Engineering Technology - Electromechanical</li>
+            <li>Bachelor of Business - Accounting (المحاسبة)</li>
+            <li>Bachelor of Business - Banking & Finance (البنوك والتمويل)</li>
+            <li>Bachelor of Business - Human Resource Management</li>
+            <li>Bachelor of Business - Management (الإدارة)</li>
+            <li>Bachelor of Business - Marketing (التسويق)</li>
+            <li>Bachelor of International Logistics Management</li>
             <li>Bachelor of Visual Design (التصميم المرئي)</li>
             <li>Bachelor of Web Media (إعلام الويب)</li>
             <li>Bachelor of Creative Media (الإعلام الإبداعي)</li>
             <li>Bachelor of Film & Animation (الأفلام والرسوم المتحركة)</li>
           </ul>
-          <a href="https://www.polytechnic.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 3. UTB -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000" data-system="3 Trimesters / Year" data-url="https://www.utb.edu.bh/wp-content/uploads/2025/01/UTB-University-Catalogue-24-25.pdf">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000" data-system="3 Trimesters / Year" data-url="https://www.utb.edu.bh/academics/undergraduate-programs/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University of Technology Bahrain (UTB)</span>
@@ -268,7 +204,7 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>B.Sc. in Business Informatics (معلوماتية الأعمال)</li>
             <li>B.Sc. in Computer Science (علوم الحاسوب)</li>
@@ -281,12 +217,11 @@
             <li>B.Sc. in Mechatronics Engineering (هندسة الميكاترونكس)</li>
             <li>B.Sc. in Environmental Engineering (الهندسة البيئية)</li>
           </ul>
-          <a href="https://www.utb.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 4. AGU -->
-      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://www.agu.edu.bh">
+      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://www.agu.edu.bh/en/Academics">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Arabian Gulf University (AGU)</span>
@@ -297,23 +232,22 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>Doctor of Medicine - MD (دكتور في الطب البشري)</li>
             <li>B.Sc. in Nursing (بكالوريوس التمريض)</li>
-            <li>M.Sc. / PhD in Molecular Medicine & Biotechnology (الطب الجزيئي والتقنية الحيوية)</li>
-            <li>M.Sc. / PhD in Gifted Education (تربية الموهوبين)</li>
-            <li>M.Sc. / PhD in Learning Disabilities & Special Education (صعوبات التعلم والتربية الخاصة)</li>
-            <li>M.Sc. in Environmental Management & Water Resources (الإدارة البيئية والموارد المائية)</li>
-            <li>M.Sc. in Innovation & Technology Management (إدارة الابتكار والتقنية)</li>
-            <li>M.Sc. in Regenerative Medicine (الطب التجديدي)</li>
+            <li>M.Sc. / PhD in Molecular Medicine & Biotechnology</li>
+            <li>M.Sc. / PhD in Gifted Education</li>
+            <li>M.Sc. / PhD in Learning Disabilities & Special Education</li>
+            <li>M.Sc. in Environmental Management & Water Resources</li>
+            <li>M.Sc. in Innovation & Technology Management</li>
+            <li>M.Sc. in Regenerative Medicine</li>
           </ul>
-          <a href="https://www.agu.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 5. RCSI Bahrain -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://www.rcsi.com/bahrain">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://www.rcsi.com/bahrain/undergraduate">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">RCSI Bahrain (Royal College of Surgeons in Ireland)</span>
@@ -324,19 +258,18 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>Medicine - MB BCh BAO (الطب البشري والجراحة)</li>
             <li>B.Sc. in Nursing (بكالوريوس التمريض)</li>
             <li>Higher Diploma in Midwifery (دبلوم القبالة)</li>
-            <li>M.Sc. in Nursing & Healthcare Management (ماجستير التمريض وإدارة الرعاية الصحية)</li>
+            <li>M.Sc. in Nursing & Healthcare Management</li>
           </ul>
-          <a href="https://www.rcsi.com/bahrain" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 6. AUBH -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://aubh.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://aubh.edu.bh/academics/undergraduate-programs/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">American University of Bahrain (AUBH)</span>
@@ -347,26 +280,25 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>B.Sc. in Computer Science (علوم الحاسوب)</li>
             <li>B.Sc. in Computer Engineering (هندسة الحاسوب)</li>
             <li>B.Sc. in Industrial Engineering (الهندسة الصناعية)</li>
             <li>B.Sc. in Mechanical Engineering (الهندسة الميكانيكية)</li>
             <li>B.Sc. in Civil Engineering (الهندسة المدنية)</li>
-            <li>B.B.A. in Finance (إدارة الأعمال - المالية)</li>
-            <li>B.B.A. in Management (إدارة الأعمال - الإدارة)</li>
-            <li>B.B.A. in Marketing (إدارة الأعمال - التسويق)</li>
-            <li>B.B.A. in Human Resources (إدارة الأعمال - الموارد البشرية)</li>
-            <li>B.B.A. in Digital Marketing & Social Media (التسويق الرقمي والتواصل الاجتماعي)</li>
+            <li>B.B.A. in Finance (المالية)</li>
+            <li>B.B.A. in Management (الإدارة)</li>
+            <li>B.B.A. in Marketing (التسويق)</li>
+            <li>B.B.A. in Human Resources (الموارد البشرية)</li>
+            <li>B.B.A. in Digital Marketing & Social Media</li>
             <li>B.A. in Multimedia Design (تصميم الوسائط المتعددة)</li>
           </ul>
-          <a href="https://aubh.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 7. ASU -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.asu.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.asu.edu.bh/academics/academic-programmes/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Applied Science University (ASU)</span>
@@ -377,7 +309,7 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>Bachelor of Law - Arabic (الحقوق / القانون - عربي)</li>
             <li>Bachelor of Laws - LLB English (القانون - إنجليزي)</li>
@@ -385,21 +317,20 @@
             <li>Bachelor of Business Administration (إدارة الأعمال)</li>
             <li>Bachelor of Accounting & Finance (المحاسبة والتمويل)</li>
             <li>Bachelor of Accounting (المحاسبة - عربي)</li>
-            <li>Bachelor of Management Information Systems (نظم المعلومات الإدارية)</li>
+            <li>Bachelor of Management Information Systems</li>
             <li>Bachelor of Computer Science (علوم الحاسوب)</li>
             <li>Bachelor of Graphic Design (التصميم الجرافيكي)</li>
             <li>Bachelor of Interior Design (التصميم الداخلي)</li>
             <li>B.Eng. in Architectural Engineering (الهندسة المعمارية)</li>
-            <li>B.Eng. in Civil & Construction Engineering (الهندسة المدنية والإنشائية)</li>
-            <li>B.Eng. in Mechanical Engineering (الهندسة الميكانيكية)</li>
-            <li>B.Eng. in Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)</li>
+            <li>B.Eng. in Civil & Construction Engineering</li>
+            <li>B.Eng. in Mechanical Engineering</li>
+            <li>B.Eng. in Electrical & Electronic Engineering</li>
           </ul>
-          <a href="https://www.asu.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 8. Ahlia University -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.ahlia.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.ahlia.edu.bh/academics/undergraduate-programs/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Ahlia University</span>
@@ -410,26 +341,25 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>B.Sc. in Information Technology (تقنية المعلومات)</li>
-            <li>B.Sc. in Distributed Systems & Multimedia (الأنظمة الموزعة والوسائط المتعددة)</li>
-            <li>B.Sc. in Mobile & Network Engineering (هندسة الشبكات والهواتف النقالة)</li>
+            <li>B.Sc. in Distributed Systems & Multimedia</li>
+            <li>B.Sc. in Mobile & Network Engineering</li>
             <li>B.Sc. in Accounting & Finance (المحاسبة والتمويل)</li>
             <li>B.Sc. in Banking & Finance (المصارف والتمويل)</li>
             <li>B.Sc. in Economics & Finance (الاقتصاد والتمويل)</li>
             <li>B.Sc. in Management & Marketing (الإدارة والتسويق)</li>
-            <li>B.Sc. in Management Information Systems (نظم المعلومات الإدارية)</li>
-            <li>B.A. in Mass Communication & Public Relations (الإعلام والعلاقات العامة)</li>
+            <li>B.Sc. in Management Information Systems</li>
+            <li>B.A. in Mass Communication & Public Relations</li>
             <li>B.A. in Interior Design (التصميم الداخلي)</li>
             <li>B.Sc. in Physiotherapy (العلاج الطبيعي)</li>
           </ul>
-          <a href="https://www.ahlia.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 9. Kingdom University -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000" data-system="3 Trimesters / Year" data-url="https://ku.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000" data-system="3 Trimesters / Year" data-url="https://www.ku.edu.bh/academics/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Kingdom University (KU)</span>
@@ -440,7 +370,7 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
             <li>Bachelor of Law (الحقوق / القانون)</li>
             <li>B.Sc. in Architecture (العمارة)</li>
@@ -450,12 +380,11 @@
             <li>B.Sc. in Finance & Banking (المالية والمصارف)</li>
             <li>B.Sc. in Computer Science (علوم الحاسوب)</li>
           </ul>
-          <a href="https://ku.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 10. Gulf University -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000" data-system="2 Semesters / Year" data-url="https://www.gulfuniversity.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000" data-system="2 Semesters / Year" data-url="https://www.gulfuniversity.edu.bh/programs/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Gulf University</span>
@@ -466,24 +395,23 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>B.A. in Mass Communication & Public Relations (الإعلام والعلاقات العامة)</li>
-            <li>B.Sc. in Interior Design Engineering (هندسة التصميم الداخلي)</li>
-            <li>B.Sc. in Human Resource Management (إدارة الموارد البشرية)</li>
-            <li>B.Sc. in Accounting & Financial Sciences (المحاسبة والعلوم المالية)</li>
-            <li>B.Sc. in Administrative Sciences (العلوم الإدارية)</li>
+            <li>B.A. in Mass Communication & Public Relations</li>
+            <li>B.Sc. in Interior Design Engineering</li>
+            <li>B.Sc. in Human Resource Management</li>
+            <li>B.Sc. in Accounting & Financial Sciences</li>
+            <li>B.Sc. in Administrative Sciences</li>
             <li>Bachelor of Law (القانون)</li>
-            <li>B.Eng. in Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)</li>
-            <li>B.Eng. in Mechanical Engineering (الهندسة الميكانيكية)</li>
-            <li>B.Sc. in Automotive Engineering (هندسة السيارات)</li>
+            <li>B.Eng. in Electrical & Electronic Engineering</li>
+            <li>B.Eng. in Mechanical Engineering</li>
+            <li>B.Sc. in Automotive Engineering</li>
           </ul>
-          <a href="https://www.gulfuniversity.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 11. BUB -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://bub.bh">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="above5000" data-system="2 Semesters / Year" data-url="https://www.bub.bh/programmes/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">British University of Bahrain (BUB)</span>
@@ -494,29 +422,28 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>B.Sc. in Computer Science (علوم الحاسوب)</li>
-            <li>B.Sc. in Computer Science with Cyber Security (علوم الحاسوب والأمن السيبراني)</li>
-            <li>B.Sc. in Software Engineering (هندسة البرمجيات)</li>
-            <li>B.Sc. in Information Technology (تقنية المعلومات)</li>
-            <li>B.Sc. in Business Management (إدارة الأعمال)</li>
-            <li>B.Sc. in Business Management with Finance (إدارة الأعمال والمالية)</li>
-            <li>B.Sc. in Business Management with Marketing (إدارة الأعمال والتسويق)</li>
-            <li>B.Sc. in Accounting & Finance (المحاسبة والتمويل)</li>
-            <li>B.Sc. in Architecture (العمارة)</li>
-            <li>B.Sc. in Interior Design (التصميم الداخلي)</li>
-            <li>B.Sc. in Quantity Surveying (حساب الكميات)</li>
-            <li>B.Eng. in Civil Engineering (الهندسة المدنية)</li>
-            <li>B.Eng. in Mechanical Engineering (الهندسة الميكانيكية)</li>
-            <li>B.Eng. in Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)</li>
+            <li>B.Sc. in Computer Science</li>
+            <li>B.Sc. in Computer Science with Cyber Security</li>
+            <li>B.Sc. in Software Engineering</li>
+            <li>B.Sc. in Information Technology</li>
+            <li>B.Sc. in Business Management</li>
+            <li>B.Sc. in Business Management with Finance</li>
+            <li>B.Sc. in Business Management with Marketing</li>
+            <li>B.Sc. in Accounting & Finance</li>
+            <li>B.Sc. in Architecture</li>
+            <li>B.Sc. in Interior Design</li>
+            <li>B.Sc. in Quantity Surveying</li>
+            <li>B.Eng. in Civil Engineering</li>
+            <li>B.Eng. in Mechanical Engineering</li>
+            <li>B.Eng. in Electrical & Electronic Engineering</li>
           </ul>
-          <a href="https://bub.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 12. AOU -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000" data-system="2 Semesters / Year" data-url="https://www.aou.org.bh">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="1000to3000" data-system="2 Semesters / Year" data-url="https://www.aou.org.bh/academics/programmes">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Arab Open University (AOU)</span>
@@ -527,24 +454,23 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>B.Sc. in Information Technology & Computing (تقنية المعلومات والحوسبة)</li>
-            <li>B.Sc. in Computing with Business (الحوسبة مع الأعمال)</li>
-            <li>B.Sc. in Cyber Security (الأمن السيبراني)</li>
-            <li>B.A. in Business Studies - Accounting (دراسات الأعمال - المحاسبة)</li>
-            <li>B.A. in Business Studies - Marketing (دراسات الأعمال - التسويق)</li>
-            <li>B.A. in Business Studies - Systems (دراسات الأعمال - النظم الإدارية)</li>
-            <li>B.A. in Business Studies - Economics (دراسات الأعمال - الاقتصاد)</li>
-            <li>B.A. in English Language & Literature (اللغة الإنجليزية وآدابها)</li>
-            <li>B.A. in Graphic & Multimedia Design (التصميم الجرافيكي والوسائط المتعددة)</li>
+            <li>B.Sc. in Information Technology & Computing</li>
+            <li>B.Sc. in Computing with Business</li>
+            <li>B.Sc. in Cyber Security</li>
+            <li>B.A. in Business Studies - Accounting</li>
+            <li>B.A. in Business Studies - Marketing</li>
+            <li>B.A. in Business Studies - Systems</li>
+            <li>B.A. in Business Studies - Economics</li>
+            <li>B.A. in English Language & Literature</li>
+            <li>B.A. in Graphic & Multimedia Design</li>
           </ul>
-          <a href="https://www.aou.org.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 13. RUW -->
-      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.ruw.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English Arabic" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.ruw.edu.bh/academics/undergraduate-programs">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Royal University for Women (RUW)</span>
@@ -555,26 +481,25 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>Bachelor of Laws - LLB (الحقوق / القانون)</li>
-            <li>Bachelor of Business - Banking & Finance (إدارة الأعمال - البنوك والتمويل)</li>
-            <li>Bachelor of Business - Human Resources (إدارة الأعمال - الموارد البشرية)</li>
-            <li>Bachelor of Business - International Business (إدارة الأعمال - الأعمال الدولية)</li>
-            <li>Bachelor of Business - Marketing (إدارة الأعمال - التسويق)</li>
-            <li>Bachelor of Architecture (العمارة)</li>
-            <li>Bachelor of Interior Design (التصميم الداخلي)</li>
-            <li>Bachelor of Fashion Design (تصميم الأزياء)</li>
-            <li>Bachelor of Graphic Design (التصميم الجرافيكي)</li>
-            <li>B.Sc. in Information Technology (تقنية المعلومات)</li>
-            <li>B.Sc. in Computer Science (علوم الحاسوب)</li>
+            <li>Bachelor of Laws - LLB</li>
+            <li>Bachelor of Business - Banking & Finance</li>
+            <li>Bachelor of Business - Human Resources</li>
+            <li>Bachelor of Business - International Business</li>
+            <li>Bachelor of Business - Marketing</li>
+            <li>Bachelor of Architecture</li>
+            <li>Bachelor of Interior Design</li>
+            <li>Bachelor of Fashion Design</li>
+            <li>Bachelor of Graphic Design</li>
+            <li>B.Sc. in Information Technology</li>
+            <li>B.Sc. in Computer Science</li>
           </ul>
-          <a href="https://www.ruw.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 14. UCB -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="1000to3000" data-system="2 Semesters / Year" data-url="https://www.ucb.edu.bh">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="1000to3000" data-system="2 Semesters / Year" data-url="https://www.ucb.edu.bh/academics/undergraduate-programs">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University College of Bahrain (UCB)</span>
@@ -585,23 +510,22 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>B.Sc. in Business Administration - Finance (إدارة الأعمال - المالية)</li>
-            <li>B.Sc. in Business Administration - Islamic Finance (إدارة الأعمال - التمويل الإسلامي)</li>
-            <li>B.Sc. in Business Administration - Management (إدارة الأعمال - الإدارة)</li>
-            <li>B.Sc. in Business Administration - Marketing (إدارة الأعمال - التسويق)</li>
-            <li>B.Sc. in Information Technology (تقنية المعلومات)</li>
-            <li>B.A. in Communication & Multimedia (الاتصال والوسائط المتعددة)</li>
-            <li>B.A. in Graphic Design (التصميم الجرافيكي)</li>
-            <li>B.A. in Public Relations (العلاقات العامة)</li>
+            <li>B.Sc. in Business Administration - Finance</li>
+            <li>B.Sc. in Business Administration - Islamic Finance</li>
+            <li>B.Sc. in Business Administration - Management</li>
+            <li>B.Sc. in Business Administration - Marketing</li>
+            <li>B.Sc. in Information Technology</li>
+            <li>B.A. in Communication & Multimedia</li>
+            <li>B.A. in Graphic Design</li>
+            <li>B.A. in Public Relations</li>
           </ul>
-          <a href="https://www.ucb.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 15. BIBF -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.bibf.com">
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000" data-system="2 Semesters / Year" data-url="https://www.bibf.com/academic-programmes/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Bahrain Institute of Banking and Finance (BIBF)</span>
@@ -612,61 +536,42 @@
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>B.Sc. in Banking & Finance - Bangor University (البنوك والتمويل)</li>
-            <li>B.Sc. in Accounting & Finance - Bangor University (المحاسبة والتمويل)</li>
-            <li>B.Sc. in Islamic Finance - Bangor University (التمويل الإسلامي)</li>
-            <li>B.Sc. in Business Administration & Finance (إدارة الأعمال والمالية)</li>
-            <li>B.Sc. in Economics & Management - University of London (الاقتصاد والإدارة)</li>
-            <li>B.Sc. in Data Science & Business Analytics - University of London (علوم البيانات وتحليل الأعمال)</li>
-            <li>B.Sc. in Digital Innovation & FinTech (الابتكار الرقمي والتقنية المالية)</li>
+            <li>B.Sc. in Banking & Finance - Bangor University</li>
+            <li>B.Sc. in Accounting & Finance - Bangor University</li>
+            <li>B.Sc. in Islamic Finance - Bangor University</li>
+            <li>B.Sc. in Business Administration & Finance</li>
+            <li>B.Sc. in Economics & Management - University of London</li>
+            <li>B.Sc. in Data Science & Business Analytics</li>
+            <li>B.Sc. in Digital Innovation & FinTech</li>
           </ul>
-          <a href="https://www.bibf.com" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
 
       <!-- 16. BTC -->
-      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="under1000" data-system="2 Semesters / Year" data-url="https://www.btc.uob.edu.bh">
+      <details class="uni-card" data-type="Public" data-lang="English Arabic" data-fee="under1000" data-system="2 Semesters / Year" data-url="https://www.btc.uob.edu.bh/">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">Bahrain Teacher College (BTC)</span>
             <span class="uni-meta">🏛️ Public • 📍 Sakhir • 4 Majors</span>
-            <span class="fee-tag">💰 Free / Sponsored (مدعومة بالكامل)</span>
+            <span class="fee-tag">💰 Free / Sponsored</span>
             <span class="sys-tag">📅 2 Semesters / Year</span>
           </div>
           <span class="view-badge">Majors ▾</span>
         </summary>
         <div class="uni-body">
-          <div class="majors-title">Available Majors & Programs:</div>
+          <div class="majors-title">Select a Major to Open its Page:</div>
           <ul class="majors-list">
-            <li>B.Ed. in Primary Education - Cycle 1 (بكالوريوس التربية - نظام الفصل)</li>
-            <li>B.Ed. in Arabic & Islamic Studies Education (تعليم اللغة العربية والدراسات الإسلامية)</li>
-            <li>B.Ed. in English Language Education (تعليم اللغة الإنجليزية)</li>
-            <li>B.Ed. in Mathematics & Science Education (تعليم الرياضيات والعلوم)</li>
+            <li>B.Ed. in Primary Education - Cycle 1</li>
+            <li>B.Ed. in Arabic & Islamic Studies Education</li>
+            <li>B.Ed. in English Language Education</li>
+            <li>B.Ed. in Mathematics & Science Education</li>
           </ul>
-          <a href="https://www.btc.uob.edu.bh" target="_blank" class="website-btn">Visit Official Website ↗</a>
         </div>
       </details>
-
     </div>
   </main>
-
-  <!-- نافذة الخطة الدراسية الرسمية -->
-  <div class="modal-overlay" id="studyPlanModal" onclick="closePlanModal(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <div>
-          <h2 class="modal-title" id="planMajorTitle">Major Name</h2>
-          <div class="modal-subtitle" id="planUniTitle">University Name</div>
-        </div>
-        <button class="close-btn" onclick="forceClosePlanModal()">✕</button>
-      </div>
-      <div class="plan-meta-bar" id="planMetaBar"></div>
-      <div class="plan-scroll" id="planYearsContainer"></div>
-      <a href="#" target="_blank" id="planOfficialUrl" class="official-plan-link">Open Official Study Plan PDF / Catalog ↗</a>
-    </div>
-  </div>
 
   <nav class="navbar">
     <a href="campus-tours.html">Universities</a>
@@ -675,377 +580,32 @@
   </nav>
 
   <script>
-    // قاعدة بيانات الخطط الدراسية الرسمية المستخرجة حرفياً من كتالوجات الجامعات
-    const verifiedStudyPlans = {
-      // 1. UTB - Bachelor of Science in Business Informatics (BSBI) - Official Curriculum Plan
-      "utb_bsbi": {
-        system: "3 Trimesters / Year (12 Trimesters)",
-        credits: "132 Credit Units",
-        pdfUrl: "https://www.utb.edu.bh/wp-content/uploads/2024/02/BSBI-Programme-Specification-Effective-AY2022-2023.pdf",
-        years: [
-          {
-            year: "First Year (Trimesters 1, 2 & 3)",
-            terms: [
-              {
-                term: "First Trimester",
-                courses: [
-                  { code: "ENGL401", name: "English Communication Skills 1", cr: "3 Cr" },
-                  { code: "MATH401", name: "College Algebra", cr: "3 Cr" },
-                  { code: "COMP613", name: "Fundamentals of Information Systems", cr: "3 Cr" },
-                  { code: "BUSI611", name: "Principles of Management", cr: "3 Cr" },
-                  { code: "EUTH400", name: "Euthenics 1", cr: "0 Cr" }
-                ]
-              },
-              {
-                term: "Second Trimester",
-                courses: [
-                  { code: "ENGL402", name: "English Communication Skills 2", cr: "3 Cr" },
-                  { code: "HIST400", name: "History of Bahrain and the GCC Region", cr: "3 Cr" },
-                  { code: "BSBI625", name: "Principles of Banking and Finance", cr: "3 Cr" },
-                  { code: "COMP623", name: "Business Information Systems", cr: "3 Cr" },
-                  { code: "EUTH401", name: "Euthenics 2", cr: "0 Cr" }
-                ]
-              },
-              {
-                term: "Third Trimester",
-                courses: [
-                  { code: "ARAB400A", name: "Arabic Language", cr: "3 Cr" },
-                  { code: "SOCI400", name: "Sociology", cr: "3 Cr" },
-                  { code: "BUSI622", name: "Financial Accounting", cr: "3 Cr" },
-                  { code: "BUSI631", name: "Microeconomics", cr: "3 Cr" },
-                  { code: "ENVM400", name: "Environmental Management", cr: "3 Cr" }
-                ]
-              }
-            ]
-          },
-          {
-            year: "Second Year (Trimesters 4, 5 & 6)",
-            terms: [
-              {
-                term: "First Trimester",
-                courses: [
-                  { code: "BSBI711", name: "Bahrain Business Environment & Cross-Cultural Management", cr: "3 Cr" },
-                  { code: "COMP711", name: "Introduction to E-Commerce", cr: "3 Cr" },
-                  { code: "COMP712", name: "Computer Programming 1", cr: "3 Cr" },
-                  { code: "BUSI712", name: "Managerial Accounting 1", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Second Trimester",
-                courses: [
-                  { code: "COMP721", name: "Database Management Systems", cr: "3 Cr" },
-                  { code: "COMP722", name: "Human-Computer Interaction", cr: "3 Cr" },
-                  { code: "BUSI721", name: "Financial Management", cr: "3 Cr" },
-                  { code: "STAT721", name: "Business Statistics", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Third Trimester",
-                courses: [
-                  { code: "COMP731", name: "Systems Analysis and Design 1", cr: "3 Cr" },
-                  { code: "COMP732", name: "IT Infrastructure", cr: "3 Cr" },
-                  { code: "BSBI733", name: "Principles of Marketing", cr: "3 Cr" },
-                  { code: "ELEC-B1", name: "Major Elective 1 (Business Component)", cr: "3 Cr" }
-                ]
-              }
-            ]
-          },
-          {
-            year: "Third Year (Trimesters 7, 8 & 9)",
-            terms: [
-              {
-                term: "First Trimester",
-                courses: [
-                  { code: "BUSI811", name: "Islamic Banking and Finance 1", cr: "3 Cr" },
-                  { code: "BSBI812", name: "Business Process Management", cr: "3 Cr" },
-                  { code: "BSBI813", name: "Bahrain Business Law and Taxation", cr: "3 Cr" },
-                  { code: "COMP811", name: "Systems Analysis and Design 2", cr: "3 Cr" },
-                  { code: "COMP812", name: "IS Strategy, Acquisition and Management", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Second Trimester",
-                courses: [
-                  { code: "BSBI821", name: "Operations Management", cr: "3 Cr" },
-                  { code: "COMP821", name: "Information Management, Security, and Support", cr: "3 Cr" },
-                  { code: "COMP822", name: "Web Design and Development", cr: "3 Cr" },
-                  { code: "COMP823", name: "Project Management", cr: "3 Cr" },
-                  { code: "COMP824", name: "Data Mining & Warehousing", cr: "3 Cr" },
-                  { code: "COMP825", name: "FinTech", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Third Trimester",
-                courses: [
-                  { code: "BSBI833", name: "BSBI Capstone Project A", cr: "3 Cr" },
-                  { code: "BUSI831", name: "Business Analytics", cr: "3 Cr" },
-                  { code: "COMP832", name: "Enterprise Systems Architecture and Applications", cr: "3 Cr" },
-                  { code: "ELEC-I1", name: "Major Elective 2 (Informatics Component)", cr: "3 Cr" }
-                ]
-              }
-            ]
-          },
-          {
-            year: "Fourth Year (Trimesters 10 & 11)",
-            terms: [
-              {
-                term: "First Trimester",
-                courses: [
-                  { code: "BSBI843", name: "BSBI Capstone Project B", cr: "3 Cr" },
-                  { code: "COMP841", name: "Cloud Computing", cr: "3 Cr" },
-                  { code: "ELEC-I2", name: "Major Elective 3 (Informatics Component)", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Second Trimester",
-                courses: [
-                  { code: "BSBI842", name: "Business Informatics Internship (Practicum)", cr: "6 Cr" }
-                ]
-              }
-            ]
-          }
-        ],
-        electivesNote: "Official BSBI Elective Courses (1 from Business Component + 2 from Informatics Component):",
-        electives: [
-          { code: "BUSI-EL", name: "Business Innovation (Major Elective 1 - Business Component)", cr: "3 Cr" },
-          { code: "COMP-EL1", name: "Multimedia Development (Major Elective 2/3 - Informatics Component)", cr: "3 Cr" },
-          { code: "COMP-EL2", name: "Open-Source Software (Major Elective 2/3 - Informatics Component)", cr: "3 Cr" }
-        ]
-      },
-
-      // 2. UOB - B.Sc. in Computer Science (Official Academic Plan)
-      "uob_bscs": {
-        system: "2 Semesters / Year (8 Semesters)",
-        credits: "132 Credit Hours",
-        pdfUrl: "https://cit.uob.edu.bh/undergraduate/b-sc-in-computer-science/",
-        years: [
-          {
-            year: "Year 1 (Semesters 1 & 2)",
-            terms: [
-              {
-                term: "Semester 1",
-                courses: [
-                  { code: "ITCS113", name: "Computer Programming I", cr: "3 Cr" },
-                  { code: "MATHS101", name: "Calculus I", cr: "3 Cr" },
-                  { code: "PHYCS101", name: "General Physics I", cr: "4 Cr" },
-                  { code: "ENGL154", name: "Language Development I", cr: "3 Cr" },
-                  { code: "ARAB110", name: "Arabic Language Skills", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Semester 2",
-                courses: [
-                  { code: "ITCS114", name: "Computer Programming II", cr: "3 Cr" },
-                  { code: "MATHS102", name: "Calculus II", cr: "3 Cr" },
-                  { code: "ITCE112", name: "Digital Logic Design", cr: "3 Cr" },
-                  { code: "ENGL155", name: "Language Development II", cr: "3 Cr" },
-                  { code: "HIST122", name: "Modern History of Bahrain", cr: "3 Cr" }
-                ]
-              }
-            ]
-          },
-          {
-            year: "Year 2 (Semesters 3 & 4)",
-            terms: [
-              {
-                term: "Semester 3",
-                courses: [
-                  { code: "ITCS214", name: "Data Structures", cr: "3 Cr" },
-                  { code: "ITCS254", name: "Discrete Structures I", cr: "3 Cr" },
-                  { code: "ITCE211", name: "Computer Organization & Assembly Language", cr: "3 Cr" },
-                  { code: "STAT273", name: "Probability and Statistics", cr: "3 Cr" },
-                  { code: "ISLM101", name: "Islamic Culture", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Semester 4",
-                courses: [
-                  { code: "ITCS285", name: "Database Management Systems", cr: "3 Cr" },
-                  { code: "ITCS255", name: "Discrete Structures II", cr: "3 Cr" },
-                  { code: "ITSE201", name: "Introduction to Software Engineering", cr: "3 Cr" },
-                  { code: "MATHS211", name: "Linear Algebra", cr: "3 Cr" },
-                  { code: "HRLC107", name: "Human Rights", cr: "2 Cr" }
-                ]
-              }
-            ]
-          },
-          {
-            year: "Year 3 (Semesters 5 & 6)",
-            terms: [
-              {
-                term: "Semester 5",
-                courses: [
-                  { code: "ITCS347", name: "Analysis and Design of Algorithms", cr: "3 Cr" },
-                  { code: "ITCS325", name: "Operating Systems", cr: "3 Cr" },
-                  { code: "ITCE314", name: "Computer Networks I", cr: "3 Cr" },
-                  { code: "ITCS333", name: "Internet Software Development", cr: "3 Cr" },
-                  { code: "ITCS-EL1", name: "Major Elective I", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Semester 6",
-                courses: [
-                  { code: "ITCS389", name: "Software Engineering II", cr: "3 Cr" },
-                  { code: "ITCS341", name: "Programming Languages", cr: "3 Cr" },
-                  { code: "ITCS396", name: "Artificial Intelligence", cr: "3 Cr" },
-                  { code: "ITCS399", name: "Practical Training (Internship)", cr: "1 Cr" },
-                  { code: "ITCS-EL2", name: "Major Elective II", cr: "3 Cr" }
-                ]
-              }
-            ]
-          },
-          {
-            year: "Year 4 (Semesters 7 & 8)",
-            terms: [
-              {
-                term: "Semester 7",
-                courses: [
-                  { code: "ITCS498", name: "Senior Project I", cr: "3 Cr" },
-                  { code: "ITCS442", name: "Theory of Computation", cr: "3 Cr" },
-                  { code: "ITCS461", name: "Computer & Network Security", cr: "3 Cr" },
-                  { code: "ITCS-EL3", name: "Major Elective III", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Semester 8",
-                courses: [
-                  { code: "ITCS499", name: "Senior Project II", cr: "3 Cr" },
-                  { code: "ITCS422", name: "Parallel & Distributed Computing", cr: "3 Cr" },
-                  { code: "ITCS-EL4", name: "Major Elective IV", cr: "3 Cr" },
-                  { code: "GEN-EL", name: "General Studies Elective", cr: "3 Cr" }
-                ]
-              }
-            ]
-          }
-        ],
-        electivesNote: "Official UOB Computer Science Major Electives (Choose 4 Courses):",
-        electives: [
-          { code: "ITCS473", name: "Machine Learning", cr: "3 Cr" },
-          { code: "ITCS489", name: "Data Mining & Big Data Analytics", cr: "3 Cr" },
-          { code: "ITCS444", name: "Mobile Application Development", cr: "3 Cr" },
-          { code: "ITCS453", name: "Computer Graphics", cr: "3 Cr" },
-          { code: "ITCS435", name: "Cloud Computing", cr: "3 Cr" }
-        ]
-      }
-    };
-
-    function getStudyPlan(majorName, uniName, uniSystem, uniUrl) {
-      const m = majorName.toLowerCase();
-      const u = uniName.toLowerCase();
-
-      if (u.includes('utb') && m.includes('business informatics')) {
-        return verifiedStudyPlans.utb_bsbi;
-      }
-      if (u.includes('university of bahrain') && m.includes('computer science')) {
-        return verifiedStudyPlans.uob_bscs;
-      }
-
-      // لبقية التخصصات: توجيه صادق ومباشر لملف الكتالوج الرسمي للجامعة بدون بيانات تخمينية
-      return {
-        system: uniSystem,
-        credits: "Official University Catalogue",
-        pdfUrl: uniUrl,
-        isPendingCatalog: true
-      };
-    }
-
-    function attachStudyPlanButtons() {
-      const uniCards = document.querySelectorAll('.uni-card');
-      uniCards.forEach(card => {
-        const uniName = card.querySelector('.uni-title').textContent;
+    // تحويل كل تخصص تلقائياً إلى رابط يفتح صفحة التخصص (major-details.html)
+    function convertMajorsToPageLinks() {
+      document.querySelectorAll('.uni-card').forEach(card => {
+        const uniName = card.querySelector('.uni-title').textContent.trim();
         const uniSystem = card.getAttribute('data-system');
+        const uniFee = card.querySelector('.fee-tag').textContent.trim();
         const uniUrl = card.getAttribute('data-url');
-        const items = card.querySelectorAll('.majors-list li');
 
-        items.forEach(li => {
-          const majorText = li.textContent.trim();
+        card.querySelectorAll('.majors-list li').forEach(li => {
+          const majorName = li.textContent.trim();
+          const params = new URLSearchParams({
+            major: majorName,
+            uni: uniName,
+            sys: uniSystem,
+            fee: uniFee,
+            url: uniUrl
+          });
+
           li.innerHTML = `
-            <span class="major-name-text">${majorText}</span>
-            <button type="button" class="plan-btn" onclick="openStudyPlan('${majorText.replace(/'/g, "\\'")}', '${uniName.replace(/'/g, "\\'")}', '${uniSystem}', '${uniUrl}')">Study Plan 📋</button>
+            <a class="major-link" href="major-details.html?${params.toString()}">
+              <span>${majorName}</span>
+              <span class="arrow-badge">Open →</span>
+            </a>
           `;
         });
       });
-    }
-
-    function openStudyPlan(majorName, uniName, uniSystem, uniUrl) {
-      const plan = getStudyPlan(majorName, uniName, uniSystem, uniUrl);
-      document.getElementById('planMajorTitle').textContent = majorName;
-      document.getElementById('planUniTitle').textContent = uniName;
-
-      document.getElementById('planMetaBar').innerHTML = `
-        <span class="plan-chip system-chip">📅 ${plan.system}</span>
-        <span class="plan-chip">📚 ${plan.credits}</span>
-      `;
-
-      const container = document.getElementById('planYearsContainer');
-      container.innerHTML = '';
-
-      if (plan.isPendingCatalog) {
-        container.innerHTML = `
-          <div class="catalog-notice">
-            <strong>📄 Official Study Plan & Electives</strong><br><br>
-            To ensure 100% accuracy of course codes, prerequisites, and elective lists for <strong>${majorName}</strong> at <strong>${uniName}</strong>, please view the official programme specification directly from the university's academic portal below.
-          </div>
-        `;
-        document.getElementById('planOfficialUrl').href = plan.pdfUrl;
-        document.getElementById('studyPlanModal').style.display = 'flex';
-        return;
-      }
-
-      plan.years.forEach(yr => {
-        let termsHtml = yr.terms.map(t => {
-          let coursesHtml = t.courses.map(c => `
-            <li>
-              <span><span class="course-code">${c.code}</span>${c.name}</span>
-              <span class="cr-tag">${c.cr}</span>
-            </li>
-          `).join('');
-
-          return `
-            <div class="term-group">
-              <div class="term-title">📌 ${t.term}</div>
-              <ul class="courses-list">${coursesHtml}</ul>
-            </div>
-          `;
-        }).join('');
-
-        container.innerHTML += `
-          <div class="year-block">
-            <div class="year-header">${yr.year}</div>
-            ${termsHtml}
-          </div>
-        `;
-      });
-
-      if (plan.electives && plan.electives.length > 0) {
-        const electivesHtml = plan.electives.map(el => `
-          <li>
-            <span><span class="course-code">${el.code}</span>${el.name}</span>
-            <span class="cr-tag">${el.cr}</span>
-          </li>
-        `).join('');
-
-        container.innerHTML += `
-          <div class="electives-box">
-            <div class="electives-title">⭐ Elective Courses (المقررات الاختيارية)</div>
-            <div class="electives-note">${plan.electivesNote}</div>
-            <ul class="courses-list">${electivesHtml}</ul>
-          </div>
-        `;
-      }
-
-      document.getElementById('planOfficialUrl').href = plan.pdfUrl;
-      document.getElementById('studyPlanModal').style.display = 'flex';
-    }
-
-    function closePlanModal(event) {
-      if (event.target.id === 'studyPlanModal') {
-        forceClosePlanModal();
-      }
-    }
-
-    function forceClosePlanModal() {
-      document.getElementById('studyPlanModal').style.display = 'none';
     }
 
     function filterUniversities() {
@@ -1074,9 +634,7 @@
         if (matchUni && matchMajor && matchLang && matchType && matchFee) {
           card.style.display = 'block';
           visibleCount++;
-          if (majorInput !== '') {
-            card.setAttribute('open', 'true');
-          }
+          if (majorInput !== '') card.setAttribute('open', 'true');
         } else {
           card.style.display = 'none';
         }
@@ -1093,8 +651,7 @@
       document.getElementById('typeFilter').value = 'all';
       document.getElementById('feeFilter').value = 'all';
 
-      var cards = document.querySelectorAll('.uni-card');
-      cards.forEach(function(card) {
+      document.querySelectorAll('.uni-card').forEach(card => {
         card.style.display = 'block';
         card.removeAttribute('open');
       });
@@ -1103,7 +660,7 @@
       document.getElementById('noResults').style.display = 'none';
     }
 
-    attachStudyPlanButtons();
+    convertMajorsToPageLinks();
   </script>
 
 </body>
