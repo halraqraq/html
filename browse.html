@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Browse Universities & Majors</title>
+  <title>Path Finder BH - Browse Universities, Majors & Study Plans</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
@@ -45,16 +45,41 @@
     .view-badge { background-color: #d90429; color: white; padding: 8px 16px; border-radius: 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
     details[open] .view-badge { background-color: #2b2d42; }
 
-    /* قائمة التخصصات عند الدخول على الجامعة */
+    /* قائمة التخصصات مع زر الخطة الدراسية */
     .uni-body { padding: 0 18px 18px 18px; border-top: 1px solid #f1f3f5; background-color: #fcfcfc; }
     .majors-title { font-size: 13px; font-weight: 700; color: #d90429; margin: 12px 0 8px 0; }
-    .majors-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .majors-list li { background: #ffffff; padding: 8px 12px; border-radius: 10px; font-size: 12.5px; border-left: 3.5px solid #d90429; border-top: 1px solid #f1f3f5; border-right: 1px solid #f1f3f5; border-bottom: 1px solid #f1f3f5; font-weight: 500; }
+    .majors-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .majors-list li { background: #ffffff; padding: 9px 12px; border-radius: 12px; font-size: 12.5px; border-left: 3.5px solid #d90429; border-top: 1px solid #f1f3f5; border-right: 1px solid #f1f3f5; border-bottom: 1px solid #f1f3f5; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .major-name-text { flex: 1; line-height: 1.35; }
+    
+    .plan-btn { background-color: #fff0f3; color: #d90429; border: 1px solid #ffccd5; padding: 6px 10px; border-radius: 9px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; flex-shrink: 0; }
+    .plan-btn:hover { background-color: #d90429; color: white; border-color: #d90429; }
 
     .website-btn { display: block; text-align: center; background-color: #2b2d42; color: white; text-decoration: none; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 600; }
     .website-btn:hover { background-color: #d90429; }
 
     .no-results { display: none; text-align: center; padding: 30px; color: #8d99ae; font-size: 14px; background: white; border-radius: 20px; }
+
+    /* نافذة الخطة الدراسية (Study Plan Modal) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+    .modal-box { background: white; width: 100%; max-width: 520px; border-radius: 24px; padding: 22px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.25); animation: popIn 0.2s ease-out; }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #edf2f4; padding-bottom: 12px; margin-bottom: 10px; }
+    .modal-title { font-size: 16px; font-weight: 700; color: #d90429; line-height: 1.35; }
+    .modal-subtitle { font-size: 12px; color: #6c757d; font-weight: 600; margin-top: 3px; }
+    .close-btn { background: #edf2f4; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; font-weight: bold; cursor: pointer; color: #2b2d42; flex-shrink: 0; }
+    .close-btn:hover { background: #d90429; color: white; }
+
+    .plan-meta-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .plan-chip { background: #f8f9fa; border: 1px solid #dee2e6; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #2b2d42; }
+
+    .plan-scroll { overflow-y: auto; flex: 1; padding-right: 4px; display: flex; flex-direction: column; gap: 12px; }
+    .year-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 16px; padding: 12px 14px; }
+    .year-title { font-size: 13px; font-weight: 700; color: #d90429; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .courses-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+    .courses-list li { background: white; padding: 7px 10px; border-radius: 8px; font-size: 12px; color: #2b2d42; border-left: 3px solid #2b2d42; display: flex; justify-content: space-between; align-items: center; }
+    .cr-tag { font-size: 10.5px; color: #8d99ae; font-weight: 600; }
 
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
@@ -63,13 +88,13 @@
 </head>
 <body>
 
-  <header class="header">Browse Universities & Majors</header>
+  <header class="header">Browse Universities & Study Plans</header>
 
   <main class="container">
     <!-- قسم البحث -->
     <section class="search-card">
       <input type="text" id="uniSearch" class="search-input" placeholder="Search University (e.g., UOB, UTB, Polytechnic)..." onkeyup="filterUniversities()">
-      <input type="text" id="majorSearch" class="search-input" placeholder="Search ANY Major (e.g., Cyber Security, Law, Medicine)..." onkeyup="filterUniversities()">
+      <input type="text" id="majorSearch" class="search-input" placeholder="Search ANY Major (e.g., Business Informatics, Law)..." onkeyup="filterUniversities()">
 
       <div class="filter-row">
         <select id="langFilter" class="search-select" onchange="filterUniversities()">
@@ -85,7 +110,6 @@
         </select>
       </div>
 
-      <!-- فلتر رينج الأسعار -->
       <select id="feeFilter" class="search-select" onchange="filterUniversities()">
         <option value="all">All Annual Tuition Fees (BHD)</option>
         <option value="under1000">Under 1,000 BHD / Year (مدعومة / حكومية)</option>
@@ -102,7 +126,7 @@
 
     <div class="results-info">
       <span id="resultsCount">16 Universities Available</span>
-      <span>Tap any university for majors</span>
+      <span>Tap "Study Plan" on any major</span>
     </div>
 
     <div id="noResults" class="no-results">No universities or majors found matching your search.</div>
@@ -594,6 +618,21 @@
     </div>
   </main>
 
+  <!-- نافذة الخطة الدراسية (Study Plan Modal) -->
+  <div class="modal-overlay" id="studyPlanModal" onclick="closePlanModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="planMajorTitle">Major Name</h2>
+          <div class="modal-subtitle" id="planUniTitle">University Name</div>
+        </div>
+        <button class="close-btn" onclick="forceClosePlanModal()">✕</button>
+      </div>
+      <div class="plan-meta-bar" id="planMetaBar"></div>
+      <div class="plan-scroll" id="planYearsContainer"></div>
+    </div>
+  </div>
+
   <nav class="navbar">
     <a href="campus-tours.html">Universities</a>
     <a href="index.html">Home</a>
@@ -601,6 +640,417 @@
   </nav>
 
   <script>
+    // قاعدة بيانات الخطط الدراسية حسب المجال الأكاديمي
+    const studyPlansTemplates = {
+      businessInformatics: {
+        duration: "4 Years (8 Semesters)",
+        credits: "132 Credit Hours",
+        degree: "Bachelor of Science (B.Sc.)",
+        years: [
+          {
+            year: "Year 1 – Foundation & Core Computing",
+            courses: [
+              { name: "Introduction to Computing & Programming", cr: "3 Cr" },
+              { name: "Principles of Management & Organization", cr: "3 Cr" },
+              { name: "Business Mathematics & Statistics", cr: "3 Cr" },
+              { name: "Web Design & Front-End Development (HTML/CSS/JS)", cr: "3 Cr" },
+              { name: "Financial Accounting Principles", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Systems Analysis & Databases",
+            courses: [
+              { name: "Database Management Systems (SQL)", cr: "3 Cr" },
+              { name: "Systems Analysis and Design", cr: "3 Cr" },
+              { name: "Object-Oriented Programming", cr: "3 Cr" },
+              { name: "Business Economics & Marketing", cr: "3 Cr" },
+              { name: "Data Communications & Computer Networks", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Enterprise Systems & Analytics",
+            courses: [
+              { name: "Enterprise Resource Planning (ERP Systems)", cr: "3 Cr" },
+              { name: "E-Business & Digital Commerce", cr: "3 Cr" },
+              { name: "Business Intelligence & Data Analytics", cr: "3 Cr" },
+              { name: "IT Project Management", cr: "3 Cr" },
+              { name: "Information Security & Governance", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Capstone & Internship",
+            courses: [
+              { name: "Strategic Information Systems Management", cr: "3 Cr" },
+              { name: "Human-Computer Interaction & UX Design", cr: "3 Cr" },
+              { name: "Graduation Capstone Project (Part 1 & 2)", cr: "6 Cr" },
+              { name: "Industry Internship / Practical Training", cr: "6 Cr" }
+            ]
+          }
+        ]
+      },
+      computing: {
+        duration: "4 Years (8 Semesters)",
+        credits: "130 – 136 Credit Hours",
+        degree: "Bachelor of Science (B.Sc.)",
+        years: [
+          {
+            year: "Year 1 – Programming & Mathematics",
+            courses: [
+              { name: "Structured Programming (Python / C++)", cr: "3 Cr" },
+              { name: "Calculus I & Discrete Mathematics", cr: "6 Cr" },
+              { name: "Digital Logic & Computer Organization", cr: "3 Cr" },
+              { name: "Object-Oriented Programming (Java)", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Algorithms & Data",
+            courses: [
+              { name: "Data Structures & Algorithms", cr: "3 Cr" },
+              { name: "Database Systems & SQL", cr: "3 Cr" },
+              { name: "Operating Systems", cr: "3 Cr" },
+              { name: "Computer Networks & Protocols", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Software, Security & AI",
+            courses: [
+              { name: "Software Engineering & Agile Methods", cr: "3 Cr" },
+              { name: "Artificial Intelligence & Machine Learning", cr: "3 Cr" },
+              { name: "Cyber Security & Cryptography", cr: "3 Cr" },
+              { name: "Full-Stack Web & Mobile App Development", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Graduation Project & Specialization",
+            courses: [
+              { name: "Cloud Computing & Distributed Systems", cr: "3 Cr" },
+              { name: "Senior Graduation Project I & II", cr: "6 Cr" },
+              { name: "Professional IT Internship", cr: "3 – 6 Cr" }
+            ]
+          }
+        ]
+      },
+      engineering: {
+        duration: "4 – 5 Years",
+        credits: "136 – 155 Credit Hours",
+        degree: "Bachelor of Engineering / B.Sc.",
+        years: [
+          {
+            year: "Year 1 – Engineering Sciences",
+            courses: [
+              { name: "Engineering Calculus I & II", cr: "6 Cr" },
+              { name: "Engineering Physics & Chemistry", cr: "6 Cr" },
+              { name: "Engineering Drawing & CAD", cr: "3 Cr" },
+              { name: "Programming for Engineers", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Core Engineering Fundamentals",
+            courses: [
+              { name: "Differential Equations & Linear Algebra", cr: "3 Cr" },
+              { name: "Statics, Dynamics & Mechanics of Materials", cr: "6 Cr" },
+              { name: "Electric Circuits & Electronics", cr: "3 Cr" },
+              { name: "Thermodynamics & Fluid Mechanics", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Specialized Design & Labs",
+            courses: [
+              { name: "Control Systems & Instrumentation", cr: "3 Cr" },
+              { name: "Engineering Materials & Manufacturing", cr: "3 Cr" },
+              { name: "Advanced Specialization Labs", cr: "6 Cr" },
+              { name: "Engineering Economy & Project Management", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Senior Design & Field Training",
+            courses: [
+              { name: "Senior Engineering Design Project I & II", cr: "6 Cr" },
+              { name: "Industrial Field Training / Internship", cr: "3 – 6 Cr" },
+              { name: "Professional Ethics & Safety Standards", cr: "3 Cr" }
+            ]
+          }
+        ]
+      },
+      business: {
+        duration: "4 Years (8 Semesters)",
+        credits: "126 – 132 Credit Hours",
+        degree: "Bachelor of Business / B.Sc.",
+        years: [
+          {
+            year: "Year 1 – Business Foundations",
+            courses: [
+              { name: "Principles of Management", cr: "3 Cr" },
+              { name: "Principles of Financial Accounting", cr: "3 Cr" },
+              { name: "Microeconomics & Macroeconomics", cr: "6 Cr" },
+              { name: "Business Communication & Mathematics", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Functional Areas",
+            courses: [
+              { name: "Principles of Marketing", cr: "3 Cr" },
+              { name: "Managerial Accounting & Corporate Finance", cr: "6 Cr" },
+              { name: "Business Statistics & Quantitative Analysis", cr: "3 Cr" },
+              { name: "Management Information Systems", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Concentration & Strategy",
+            courses: [
+              { name: "Human Resource Management", cr: "3 Cr" },
+              { name: "Operations & Supply Chain Management", cr: "3 Cr" },
+              { name: "Commercial & Business Law", cr: "3 Cr" },
+              { name: "Specialized Major Electives", cr: "6 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Strategic Management & Internship",
+            courses: [
+              { name: "Strategic Management & Entrepreneurship", cr: "3 Cr" },
+              { name: "International Business & Ethics", cr: "3 Cr" },
+              { name: "Graduation Research Project", cr: "3 Cr" },
+              { name: "Corporate Internship", cr: "3 – 6 Cr" }
+            ]
+          }
+        ]
+      },
+      law: {
+        duration: "4 Years (8 Semesters)",
+        credits: "132 Credit Hours",
+        degree: "Bachelor of Laws (LLB)",
+        years: [
+          {
+            year: "Year 1 – Introduction to Legal Studies",
+            courses: [
+              { name: "Introduction to Law & Legal Systems", cr: "3 Cr" },
+              { name: "Constitutional Law & Political Systems", cr: "3 Cr" },
+              { name: "History of Law & Islamic Jurisprudence", cr: "3 Cr" },
+              { name: "Legal Terminology (Arabic / English)", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Civil & Criminal Law",
+            courses: [
+              { name: "Civil Law: Sources & Rules of Obligations", cr: "6 Cr" },
+              { name: "General Penal (Criminal) Law", cr: "3 Cr" },
+              { name: "Administrative Law", cr: "3 Cr" },
+              { name: "Public International Law", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Commercial & Procedural Law",
+            courses: [
+              { name: "Commercial Law & Companies", cr: "3 Cr" },
+              { name: "Civil & Commercial Procedures", cr: "3 Cr" },
+              { name: "Special Penal Law", cr: "3 Cr" },
+              { name: "Labor Law & Social Insurance", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Practical Litigation & Moot Court",
+            courses: [
+              { name: "Criminal Procedures & Evidence", cr: "3 Cr" },
+              { name: "Private International Law & Arbitration", cr: "3 Cr" },
+              { name: "Moot Court & Practical Legal Clinic", cr: "3 Cr" },
+              { name: "Legal Graduation Research", cr: "3 Cr" }
+            ]
+          }
+        ]
+      },
+      medical: {
+        duration: "4 – 6 Years (Depending on Program)",
+        credits: "135 – 210 Credit Hours",
+        degree: "MD / B.Sc. Health Sciences",
+        years: [
+          {
+            year: "Year 1 – Pre-Medical & Basic Sciences",
+            courses: [
+              { name: "Human Anatomy & Physiology I & II", cr: "6 Cr" },
+              { name: "Medical Biochemistry & Cell Biology", cr: "6 Cr" },
+              { name: "Medical Terminology & Ethics", cr: "3 Cr" },
+              { name: "Microbiology & Immunology", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Pathophysiology & Diagnostics",
+            courses: [
+              { name: "General & Systemic Pathology", cr: "6 Cr" },
+              { name: "Pharmacology & Therapeutics", cr: "3 Cr" },
+              { name: "Clinical Skills & Patient Assessment", cr: "3 Cr" },
+              { name: "Epidemiology & Public Health", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Clinical Foundations & Labs",
+            courses: [
+              { name: "Clinical Simulation & Lab Practice", cr: "6 Cr" },
+              { name: "Specialized Clinical Modules", cr: "6 Cr" },
+              { name: "Evidence-Based Healthcare Research", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4+ – Hospital Rotations & Clinical Practice",
+            courses: [
+              { name: "Hospital Clinical Rotations (Medicine, Surgery, Pediatrics)", cr: "12 Cr" },
+              { name: "Clinical Internship & Case Portfolio", cr: "6 Cr" }
+            ]
+          }
+        ]
+      },
+      designMedia: {
+        duration: "4 Years (8 Semesters)",
+        credits: "126 – 135 Credit Hours",
+        degree: "Bachelor of Arts / B.Sc.",
+        years: [
+          {
+            year: "Year 1 – Visual & Communication Foundations",
+            courses: [
+              { name: "Design Fundamentals & Color Theory", cr: "3 Cr" },
+              { name: "Drawing, Visual Perception & Typography", cr: "6 Cr" },
+              { name: "History of Art, Design & Media", cr: "3 Cr" },
+              { name: "Digital Tools (Adobe Creative Suite)", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Studio Practice & Production",
+            courses: [
+              { name: "Design Studio I & II", cr: "6 Cr" },
+              { name: "Digital Photography & Video Production", cr: "3 Cr" },
+              { name: "2D/3D Modeling & CAD", cr: "3 Cr" },
+              { name: "Media Writing & Storytelling", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Advanced Studios & Interactive Media",
+            courses: [
+              { name: "Advanced Specialized Studio III & IV", cr: "6 Cr" },
+              { name: "UI/UX & Interactive Media Design", cr: "3 Cr" },
+              { name: "Branding, Advertising & Public Relations", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Graduation Exhibition & Portfolio",
+            courses: [
+              { name: "Professional Portfolio & Entrepreneurship", cr: "3 Cr" },
+              { name: "Senior Graduation Thesis / Exhibition", cr: "6 Cr" },
+              { name: "Creative Industry Internship", cr: "3 Cr" }
+            ]
+          }
+        ]
+      },
+      educationArts: {
+        duration: "4 Years (8 Semesters)",
+        credits: "126 – 132 Credit Hours",
+        degree: "Bachelor of Education / B.A.",
+        years: [
+          {
+            year: "Year 1 – Foundations & Core Discipline",
+            courses: [
+              { name: "Introduction to Specialization Courses", cr: "6 Cr" },
+              { name: "Academic Writing & Research Skills", cr: "3 Cr" },
+              { name: "Foundations of Education / Humanities", cr: "3 Cr" },
+              { name: "Educational Psychology & Child Development", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 2 – Intermediate Core & Methodology",
+            courses: [
+              { name: "Intermediate Discipline Courses", cr: "6 Cr" },
+              { name: "Curriculum Design & Teaching Methods", cr: "3 Cr" },
+              { name: "Educational Technology in the Classroom", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 3 – Advanced Topics & Assessment",
+            courses: [
+              { name: "Advanced Specialization Seminars", cr: "6 Cr" },
+              { name: "Measurement, Evaluation & Assessment", cr: "3 Cr" },
+              { name: "Classroom Management & Inclusive Education", cr: "3 Cr" }
+            ]
+          },
+          {
+            year: "Year 4 – Teaching Practicum & Graduation Research",
+            courses: [
+              { name: "School Teaching Practicum / Field Internship", cr: "9 Cr" },
+              { name: "Senior Graduation Research Project", cr: "3 Cr" }
+            ]
+          }
+        ]
+      }
+    };
+
+    // ربط كل تخصص تلقائياً بزر الخطة الدراسية
+    function attachStudyPlanButtons() {
+      const uniCards = document.querySelectorAll('.uni-card');
+      uniCards.forEach(card => {
+        const uniName = card.querySelector('.uni-title').textContent;
+        const items = card.querySelectorAll('.majors-list li');
+        items.forEach(li => {
+          const majorText = li.textContent.trim();
+          li.innerHTML = `
+            <span class="major-name-text">${majorText}</span>
+            <button type="button" class="plan-btn" onclick="openStudyPlan('${majorText.replace(/'/g, "\\'")}', '${uniName.replace(/'/g, "\\'")}')">Study Plan 📋</button>
+          `;
+        });
+      });
+    }
+
+    function detectPlanTemplate(majorName) {
+      const m = majorName.toLowerCase();
+      if (m.includes('business informatics')) return studyPlansTemplates.businessInformatics;
+      if (m.includes('computer') || m.includes('software') || m.includes('cyber') || m.includes('information') || m.includes('data') || m.includes('network') || m.includes('cloud') || m.includes('computing')) return studyPlansTemplates.computing;
+      if (m.includes('engineering') || m.includes('mechatronics') || m.includes('surveying')) return studyPlansTemplates.engineering;
+      if (m.includes('law') || m.includes('llb') || m.includes('political')) return studyPlansTemplates.law;
+      if (m.includes('medicine') || m.includes('nursing') || m.includes('pharmacy') || m.includes('physiotherapy') || m.includes('medical') || m.includes('midwifery') || m.includes('radiologic')) return studyPlansTemplates.medical;
+      if (m.includes('design') || m.includes('architecture') || m.includes('media') || m.includes('communication') || m.includes('film') || m.includes('arts') || m.includes('fashion')) return studyPlansTemplates.designMedia;
+      if (m.includes('business') || m.includes('accounting') || m.includes('finance') || m.includes('management') || m.includes('marketing') || m.includes('economics') || m.includes('logistics') || m.includes('banking') || m.includes('fintech')) return studyPlansTemplates.business;
+      return studyPlansTemplates.educationArts;
+    }
+
+    function openStudyPlan(majorName, uniName) {
+      const plan = detectPlanTemplate(majorName);
+      document.getElementById('planMajorTitle').textContent = majorName;
+      document.getElementById('planUniTitle').textContent = uniName;
+
+      document.getElementById('planMetaBar').innerHTML = `
+        <span class="plan-chip">🎓 ${plan.degree}</span>
+        <span class="plan-chip">⏱️ ${plan.duration}</span>
+        <span class="plan-chip">📚 ${plan.credits}</span>
+      `;
+
+      const container = document.getElementById('planYearsContainer');
+      container.innerHTML = '';
+
+      plan.years.forEach(yr => {
+        const coursesHtml = yr.courses.map(c => `
+          <li>
+            <span>${c.name}</span>
+            <span class="cr-tag">${c.cr}</span>
+          </li>
+        `).join('');
+
+        container.innerHTML += `
+          <div class="year-card">
+            <div class="year-title"><span>${yr.year}</span></div>
+            <ul class="courses-list">${coursesHtml}</ul>
+          </div>
+        `;
+      });
+
+      document.getElementById('studyPlanModal').style.display = 'flex';
+    }
+
+    function closePlanModal(event) {
+      if (event.target.id === 'studyPlanModal') {
+        forceClosePlanModal();
+      }
+    }
+
+    function forceClosePlanModal() {
+      document.getElementById('studyPlanModal').style.display = 'none';
+    }
+
     function filterUniversities() {
       var uniInput = document.getElementById('uniSearch').value.toLowerCase().trim();
       var majorInput = document.getElementById('majorSearch').value.toLowerCase().trim();
@@ -655,6 +1105,9 @@
       document.getElementById('resultsCount').textContent = '16 Universities Available';
       document.getElementById('noResults').style.display = 'none';
     }
+
+    // تفعيل أزرار الخطط الدراسية تلقائياً عند تحميل الصفحة
+    attachStudyPlanButtons();
   </script>
 
 </body>
