@@ -3,70 +3,430 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Campus Tours</title>
+  <title>Path Finder BH - 360° Campus Tours & Videos</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; }
-    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .container { flex: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-    
-    .uni-card { background-color: #ffffff; border-radius: 20px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; }
-    .uni-title { font-size: 14px; font-weight: 600; color: #2b2d42; flex: 1; padding-right: 10px; }
-    .view-btn { background-color: #d90429; color: white; text-decoration: none; padding: 8px 20px; border-radius: 14px; font-size: 13px; font-weight: 600; transition: background 0.2s; }
-    .view-btn:hover { background-color: #ef233c; }
+    body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
+    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
+    .container { flex: 1; max-width: 560px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
 
-    .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; }
-    .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.85; }
+    /* بطاقة العنوان والبحث */
+    .tour-banner { background: linear-gradient(135deg, #ef233c, #d90429); color: white; padding: 20px; border-radius: 24px; box-shadow: 0 8px 20px rgba(217, 4, 41, 0.2); display: flex; flex-direction: column; gap: 12px; }
+    .tour-banner h1 { font-size: 19px; font-weight: 700; text-align: center; }
+    .tour-banner p { font-size: 13px; text-align: center; opacity: 0.9; }
+    .search-input { background-color: #ffffff; border: none; padding: 12px 16px; border-radius: 16px; width: 100%; font-size: 14px; outline: none; color: #2b2d42; }
+
+    .results-info { font-size: 13px; font-weight: 600; color: #6c757d; padding: 0 5px; display: flex; justify-content: space-between; }
+
+    /* بطاقات الجامعات القابلة للفتح */
+    .tours-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    details.tour-card { background-color: #ffffff; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; overflow: hidden; transition: border-color 0.2s; }
+    details.tour-card:hover { border-color: #d90429; }
+    details.tour-card[open] { border-color: #d90429; box-shadow: 0 6px 18px rgba(217, 4, 41, 0.12); }
+
+    summary.tour-summary { list-style: none; padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 10px; }
+    summary.tour-summary::-webkit-details-marker { display: none; }
+
+    .uni-info { flex: 1; }
+    .uni-title { font-size: 15px; font-weight: 700; color: #2b2d42; display: block; margin-bottom: 4px; }
+    .uni-meta { font-size: 12px; color: #8d99ae; }
+
+    .explore-badge { background-color: #d90429; color: white; padding: 8px 16px; border-radius: 14px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+    details[open] .explore-badge { background-color: #2b2d42; }
+
+    /* محتوى الجولة 360 والفيديو */
+    .tour-body { padding: 14px 18px 18px 18px; border-top: 1px solid #f1f3f5; background-color: #fcfcfc; display: flex; flex-direction: column; gap: 12px; }
+    .campus-desc { font-size: 12.5px; color: #495057; line-height: 1.5; }
+
+    /* إطار معاينة الخريطة 360 */
+    .map-preview { width: 100%; height: 180px; border-radius: 14px; border: 1px solid #dee2e6; overflow: hidden; }
+    .map-preview iframe { width: 100%; height: 100%; border: 0; }
+
+    .tour-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-360 { flex: 1; min-width: 140px; background-color: #d90429; color: white; text-decoration: none; text-align: center; padding: 11px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .btn-360:hover { background-color: #ef233c; }
+
+    .btn-video { flex: 1; min-width: 140px; background-color: #2b2d42; color: white; text-decoration: none; text-align: center; padding: 11px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .btn-video:hover { background-color: #1a1b29; }
+
+    .btn-site { width: 100%; background-color: #edf2f4; color: #2b2d42; text-decoration: none; text-align: center; padding: 10px; border-radius: 12px; font-size: 12.5px; font-weight: 600; transition: 0.2s; }
+    .btn-site:hover { background-color: #e2e8f0; }
+
+    .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
+    .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
+    .navbar a:hover { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <header class="header"></header>
+  <header class="header">360° Campus Tours & Videos</header>
 
   <main class="container">
-    <div class="uni-card">
-      <span class="uni-title">University of Technology Bahrain</span>
-      <a href="https://www.utb.edu.bh" target="_blank" class="view-btn">View</a>
+    <section class="tour-banner">
+      <h1>Explore Bahrain Campuses</h1>
+      <p>Take a 360° virtual tour or watch official campus walkthrough videos</p>
+      <input type="text" id="tourSearch" class="search-input" placeholder="Search university campus (e.g., UOB, UTB, AUBH)..." onkeyup="filterTours()">
+    </section>
+
+    <div class="results-info">
+      <span id="tourCount">16 University Campuses</span>
+      <span>Tap any university to explore</span>
     </div>
 
-    <div class="uni-card">
-      <span class="uni-title">University of Bahrain</span>
-      <a href="https://www.uob.edu.bh" target="_blank" class="view-btn">View</a>
-    </div>
+    <div class="tours-list" id="toursList">
 
-    <div class="uni-card">
-      <span class="uni-title">Bahrain Polytechnic</span>
-      <a href="https://www.polytechnic.bh" target="_blank" class="view-btn">View</a>
-    </div>
+      <!-- 1. UOB -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">University of Bahrain (UOB)</span>
+            <span class="uni-meta">📍 Sakhir & Isa Town Campuses</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Explore the main Sakhir campus, colleges, central library, food courts, and sports facilities.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=University%20of%20Bahrain%20Sakhir&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=University+of+Bahrain+Sakhir" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=University+of+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.uob.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
 
-    <div class="uni-card">
-      <span class="uni-title">RCSI Bahrain</span>
-      <a href="https://www.rcsi.com/bahrain" target="_blank" class="view-btn">View</a>
-    </div>
+      <!-- 2. Bahrain Polytechnic -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Bahrain Polytechnic</span>
+            <span class="uni-meta">📍 Isa Town Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Walk through modern engineering labs, ICT hubs, student hub, and collaborative learning spaces.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Bahrain%20Polytechnic%20Isa%20Town&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Bahrain+Polytechnic" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Bahrain+Polytechnic+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.polytechnic.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
 
-    <div class="uni-card">
-      <span class="uni-title">American University of Bahrain</span>
-      <a href="https://aubh.edu.bh" target="_blank" class="view-btn">View</a>
-    </div>
+      <!-- 3. UTB -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">University of Technology Bahrain (UTB)</span>
+            <span class="uni-meta">📍 Salmabad Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Tour UTB's Salmabad campus, auditorium, computer & engineering labs, and student lounge areas.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=University%20of%20Technology%20Bahrain%20Salmabad&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.utb.edu.bh/virtual-tour/" target="_blank" class="btn-360">🌐 Official 360° Virtual Tour</a>
+            <a href="https://www.youtube.com/results?search_query=University+of+Technology+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.utb.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
 
-    <div class="uni-card">
-      <span class="uni-title">Applied Science University</span>
-      <a href="https://www.asu.edu.bh" target="_blank" class="view-btn">View</a>
-    </div>
+      <!-- 4. AGU -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Arabian Gulf University (AGU)</span>
+            <span class="uni-meta">📍 Manama (Salmaniya) Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Discover AGU's medical simulation labs, research centers, library, and academic halls.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Arabian%20Gulf%20University%20Bahrain&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Arabian+Gulf+University+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Arabian+Gulf+University+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.agu.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
 
-    <div class="uni-card">
-      <span class="uni-title">Kingdom University</span>
-      <a href="https://ku.edu.bh" target="_blank" class="view-btn">View</a>
-    </div>
+      <!-- 5. RCSI Bahrain -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">RCSI Bahrain</span>
+            <span class="uni-meta">📍 Busaiteen Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Take an interactive 360° tour of RCSI Bahrain's clinical simulation center, atrium, and sports complex.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=RCSI%20Bahrain%20Busaiteen&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.rcsi.com/bahrain/about/our-campus/virtual-tour" target="_blank" class="btn-360">🌐 Official 360° Virtual Tour</a>
+            <a href="https://www.youtube.com/results?search_query=RCSI+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.rcsi.com/bahrain" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
 
-    <div class="uni-card">
-      <span class="uni-title">Bahrain Institute of Banking and Finance</span>
-      <a href="https://bibf.com" target="_blank" class="view-btn">View</a>
-    </div>
+      <!-- 6. AUBH -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">American University of Bahrain (AUBH)</span>
+            <span class="uni-meta">📍 Riffa Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Experience AUBH's purpose-built American-style campus, auditorium, multimedia studios, and athletic center.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=American%20University%20of%20Bahrain%20Riffa&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://aubh.edu.bh/campus-life/virtual-tour/" target="_blank" class="btn-360">🌐 Official 360° Virtual Tour</a>
+            <a href="https://www.youtube.com/results?search_query=American+University+of+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://aubh.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
 
-    <div class="uni-card">
-      <span class="uni-title">British University of Bahrain</span>
-      <a href="https://bub.bh" target="_blank" class="view-btn">View</a>
+      <!-- 7. ASU -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Applied Science University (ASU)</span>
+            <span class="uni-meta">📍 East Al-Ekir Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Explore ASU's iconic campus building, moot court, design studios, and library facilities.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Applied%20Science%20University%20Bahrain&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.asu.edu.bh/virtual-tour/" target="_blank" class="btn-360">🌐 Official 360° Virtual Tour</a>
+            <a href="https://www.youtube.com/results?search_query=Applied+Science+University+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.asu.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 8. Ahlia University -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Ahlia University</span>
+            <span class="uni-meta">📍 Manama Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Tour Ahlia University's smart classrooms, physiotherapy clinics, media studios, and library.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Ahlia%20University%20Bahrain&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Ahlia+University+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Ahlia+University+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.ahlia.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 9. Kingdom University -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Kingdom University (KU)</span>
+            <span class="uni-meta">📍 Riffa Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Visit Kingdom University's architecture studios, law mock court, and modern campus facilities in Riffa.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Kingdom%20University%20Bahrain&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Kingdom+University+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Kingdom+University+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://ku.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 10. Gulf University -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Gulf University</span>
+            <span class="uni-meta">📍 Sanad Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Explore Gulf University's Sanad campus, TV & radio production studios, and engineering workshops.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Gulf%20University%20Bahrain%20Sanad&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Gulf+University+Sanad+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Gulf+University+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.gulfuniversity.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 11. BUB -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">British University of Bahrain (BUB)</span>
+            <span class="uni-meta">📍 Saar Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Walk through BUB's Saar campus, architectural workshops, computer labs, and student commons.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=British%20University%20of%20Bahrain%20Saar&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=British+University+of+Bahrain+Saar" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=British+University+of+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://bub.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 12. AOU -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Arab Open University (AOU)</span>
+            <span class="uni-meta">📍 A'ali Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Discover AOU's modern campus in A'ali, e-learning labs, lecture halls, and library.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Arab%20Open%20University%20Bahrain%20Aali&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Arab+Open+University+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Arab+Open+University+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.aou.org.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 13. RUW -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Royal University for Women (RUW)</span>
+            <span class="uni-meta">📍 Riffa Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Explore RUW's purpose-built campus in Riffa, fashion & design studios, student residences, and sports club.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Royal%20University%20for%20Women%20Bahrain&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Royal+University+for+Women+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Royal+University+for+Women+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.ruw.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 14. UCB -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">University College of Bahrain (UCB)</span>
+            <span class="uni-meta">📍 Saar Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Take a look inside UCB's Saar campus, multimedia labs, classrooms, and student lounge.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=University%20College%20of%20Bahrain%20Saar&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=University+College+of+Bahrain" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=University+College+of+Bahrain+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.ucb.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 15. BIBF -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Bahrain Institute of Banking and Finance (BIBF)</span>
+            <span class="uni-meta">📍 Bahrain Bay Waterfront Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Tour BIBF's iconic 9-storey waterfront building in Bahrain Bay, dealing room, auditorium, and smart halls.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=BIBF%20Bahrain%20Bay&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=BIBF+Bahrain+Bay" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=BIBF+New+Campus+Bahrain+Bay+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.bibf.com" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
+      <!-- 16. BTC -->
+      <details class="tour-card">
+        <summary class="tour-summary">
+          <div class="uni-info">
+            <span class="uni-title">Bahrain Teacher College (BTC)</span>
+            <span class="uni-meta">📍 Sakhir Campus</span>
+          </div>
+          <span class="explore-badge">360° & Video ▾</span>
+        </summary>
+        <div class="tour-body">
+          <p class="campus-desc">Explore Bahrain Teacher College's modern teaching labs, resource center, and Sakhir campus facilities.</p>
+          <div class="map-preview">
+            <iframe loading="lazy" src="https://maps.google.com/maps?q=Bahrain%20Teachers%20College%20Sakhir&t=k&z=16&ie=UTF8&iwloc=&output=embed"></iframe>
+          </div>
+          <div class="tour-actions">
+            <a href="https://www.google.com/maps/search/?api=1&query=Bahrain+Teachers+College+Sakhir" target="_blank" class="btn-360">🌐 Open 360° Map View</a>
+            <a href="https://www.youtube.com/results?search_query=Bahrain+Teachers+College+Campus+Tour" target="_blank" class="btn-video">▶️ Official Campus Video</a>
+            <a href="https://www.btc.uob.edu.bh" target="_blank" class="btn-site">Visit Official Website ↗</a>
+          </div>
+        </div>
+      </details>
+
     </div>
   </main>
 
@@ -75,6 +435,28 @@
     <a href="index.html">Home</a>
     <a href="#">More</a>
   </nav>
+
+  <script>
+    function filterTours() {
+      var input = document.getElementById('tourSearch').value.toLowerCase().trim();
+      var cards = document.querySelectorAll('.tour-card');
+      var count = 0;
+
+      cards.forEach(function(card) {
+        var title = card.querySelector('.uni-title').textContent.toLowerCase();
+        var meta = card.querySelector('.uni-meta').textContent.toLowerCase();
+
+        if (title.indexOf(input) > -1 || meta.indexOf(input) > -1) {
+          card.style.display = 'block';
+          count++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      document.getElementById('tourCount').textContent = count + ' University Campuses';
+    }
+  </script>
 
 </body>
 </html>
