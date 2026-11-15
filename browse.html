@@ -60,9 +60,9 @@
 
     .no-results { display: none; text-align: center; padding: 30px; color: #8d99ae; font-size: 14px; background: white; border-radius: 20px; }
 
-    /* نافذة الخطة الدراسية الدقيقة (Study Plan Modal) */
+    /* نافذة الخطة الدراسية الرسمية */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.68); z-index: 1000; justify-content: center; align-items: center; padding: 14px; }
-    .modal-box { background: white; width: 100%; max-width: 550px; border-radius: 24px; padding: 20px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.28); animation: popIn 0.2s ease-out; }
+    .modal-box { background: white; width: 100%; max-width: 560px; border-radius: 24px; padding: 20px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.28); animation: popIn 0.2s ease-out; }
     @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     
     .modal-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #edf2f4; padding-bottom: 10px; margin-bottom: 10px; }
@@ -86,7 +86,7 @@
     
     .courses-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
     .courses-list li { background: white; padding: 6px 10px; border-radius: 8px; font-size: 11.5px; color: #2b2d42; border-left: 3px solid #2b2d42; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
-    .course-code { font-weight: 700; color: #d90429; font-family: monospace; font-size: 11px; margin-right: 5px; }
+    .course-code { font-weight: 700; color: #d90429; font-family: monospace; font-size: 11px; margin-right: 6px; }
     .cr-tag { font-size: 10.5px; color: #6c757d; font-weight: 700; white-space: nowrap; background: #f1f3f5; padding: 2px 6px; border-radius: 6px; }
 
     /* قسم مقررات الـ Electives المستقل في الأسفل */
@@ -94,7 +94,9 @@
     .electives-title { font-size: 13px; font-weight: 800; color: #d90429; margin-bottom: 6px; }
     .electives-note { font-size: 11.5px; color: #495057; margin-bottom: 8px; }
 
-    .official-plan-link { display: block; text-align: center; background: #2b2d42; color: white; text-decoration: none; padding: 10px; border-radius: 12px; font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
+    .catalog-notice { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 16px; padding: 16px; text-align: center; font-size: 13px; color: #495057; line-height: 1.6; }
+
+    .official-plan-link { display: block; text-align: center; background: #2b2d42; color: white; text-decoration: none; padding: 11px; border-radius: 12px; font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
     .official-plan-link:hover { background: #d90429; }
 
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
@@ -142,7 +144,7 @@
 
     <div class="results-info">
       <span id="resultsCount">16 Universities Available</span>
-      <span>Semester / Trimester Plans + Electives</span>
+      <span>Official Curriculum & Electives</span>
     </div>
 
     <div id="noResults" class="no-results">No universities or majors found matching your search.</div>
@@ -254,8 +256,8 @@
         </div>
       </details>
 
-      <!-- 3. UTB (Trimester System - 3 Terms/Year) -->
-      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000" data-system="3 Trimesters / Year" data-url="https://www.utb.edu.bh">
+      <!-- 3. UTB -->
+      <details class="uni-card" data-type="Private" data-lang="English" data-fee="3000to5000" data-system="3 Trimesters / Year" data-url="https://www.utb.edu.bh/wp-content/uploads/2025/01/UTB-University-Catalogue-24-25.pdf">
         <summary class="uni-summary">
           <div class="uni-info">
             <span class="uni-title">University of Technology Bahrain (UTB)</span>
@@ -650,7 +652,7 @@
     </div>
   </main>
 
-  <!-- نافذة الخطة الدراسية (Study Plan Modal) -->
+  <!-- نافذة الخطة الدراسية الرسمية -->
   <div class="modal-overlay" id="studyPlanModal" onclick="closePlanModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -662,7 +664,7 @@
       </div>
       <div class="plan-meta-bar" id="planMetaBar"></div>
       <div class="plan-scroll" id="planYearsContainer"></div>
-      <a href="#" target="_blank" id="planOfficialUrl" class="official-plan-link">Verify Full Course Catalog on University Website ↗</a>
+      <a href="#" target="_blank" id="planOfficialUrl" class="official-plan-link">Open Official Study Plan PDF / Catalog ↗</a>
     </div>
   </div>
 
@@ -673,152 +675,149 @@
   </nav>
 
   <script>
-    // خطط دراسية رسمية دقيقة بالمقررات ورموزها ونظام الفصول وقسم Electives مستقل
-    const exactStudyPlans = {
-      // 1. UTB - B.Sc. in Business Informatics (نظام 3 فصول في السنة - Trimester System)
-      "utb_business_informatics": {
-        system: "3 Trimesters / Year (12 Trimesters Total)",
-        credits: "132 Credit Hours",
+    // قاعدة بيانات الخطط الدراسية الرسمية المستخرجة حرفياً من كتالوجات الجامعات
+    const verifiedStudyPlans = {
+      // 1. UTB - Bachelor of Science in Business Informatics (BSBI) - Official Curriculum Plan
+      "utb_bsbi": {
+        system: "3 Trimesters / Year (12 Trimesters)",
+        credits: "132 Credit Units",
+        pdfUrl: "https://www.utb.edu.bh/wp-content/uploads/2024/02/BSBI-Programme-Specification-Effective-AY2022-2023.pdf",
         years: [
           {
-            year: "Year 1 (Trimesters 1, 2 & 3)",
+            year: "First Year (Trimesters 1, 2 & 3)",
             terms: [
               {
-                term: "Trimester 1",
+                term: "First Trimester",
                 courses: [
-                  { code: "ENGL101", name: "English Communication Skills I", cr: "3 Cr" },
-                  { code: "MATH101", name: "College Algebra & Trigonometry", cr: "3 Cr" },
-                  { code: "COMP101", name: "Introduction to Computing", cr: "3 Cr" },
-                  { code: "MGMT101", name: "Principles of Management", cr: "3 Cr" }
+                  { code: "ENGL401", name: "English Communication Skills 1", cr: "3 Cr" },
+                  { code: "MATH401", name: "College Algebra", cr: "3 Cr" },
+                  { code: "COMP613", name: "Fundamentals of Information Systems", cr: "3 Cr" },
+                  { code: "BUSI611", name: "Principles of Management", cr: "3 Cr" },
+                  { code: "EUTH400", name: "Euthenics 1", cr: "0 Cr" }
                 ]
               },
               {
-                term: "Trimester 2",
+                term: "Second Trimester",
                 courses: [
-                  { code: "ENGL102", name: "English Communication Skills II", cr: "3 Cr" },
-                  { code: "PROG101", name: "Computer Programming I (Fundamentals)", cr: "3 Cr" },
-                  { code: "ACCT101", name: "Financial Accounting I", cr: "3 Cr" },
-                  { code: "STAT101", name: "Business Statistics", cr: "3 Cr" }
+                  { code: "ENGL402", name: "English Communication Skills 2", cr: "3 Cr" },
+                  { code: "HIST400", name: "History of Bahrain and the GCC Region", cr: "3 Cr" },
+                  { code: "BSBI625", name: "Principles of Banking and Finance", cr: "3 Cr" },
+                  { code: "COMP623", name: "Business Information Systems", cr: "3 Cr" },
+                  { code: "EUTH401", name: "Euthenics 2", cr: "0 Cr" }
                 ]
               },
               {
-                term: "Trimester 3",
+                term: "Third Trimester",
                 courses: [
-                  { code: "PROG102", name: "Computer Programming II (Object-Oriented)", cr: "3 Cr" },
-                  { code: "WEBD101", name: "Web Design & Front-End Development (HTML/CSS/JS)", cr: "3 Cr" },
-                  { code: "ECON101", name: "Microeconomics", cr: "3 Cr" },
-                  { code: "ARAB101", name: "Arabic Language & Communication", cr: "3 Cr" }
+                  { code: "ARAB400A", name: "Arabic Language", cr: "3 Cr" },
+                  { code: "SOCI400", name: "Sociology", cr: "3 Cr" },
+                  { code: "BUSI622", name: "Financial Accounting", cr: "3 Cr" },
+                  { code: "BUSI631", name: "Microeconomics", cr: "3 Cr" },
+                  { code: "ENVM400", name: "Environmental Management", cr: "3 Cr" }
                 ]
               }
             ]
           },
           {
-            year: "Year 2 (Trimesters 4, 5 & 6)",
+            year: "Second Year (Trimesters 4, 5 & 6)",
             terms: [
               {
-                term: "Trimester 4",
+                term: "First Trimester",
                 courses: [
-                  { code: "DBAS201", name: "Database Management Systems (SQL)", cr: "3 Cr" },
-                  { code: "SYST201", name: "Systems Analysis and Design", cr: "3 Cr" },
-                  { code: "MKTG201", name: "Principles of Marketing", cr: "3 Cr" },
-                  { code: "HIST101", name: "History & Civilization of Bahrain", cr: "3 Cr" }
+                  { code: "BSBI711", name: "Bahrain Business Environment & Cross-Cultural Management", cr: "3 Cr" },
+                  { code: "COMP711", name: "Introduction to E-Commerce", cr: "3 Cr" },
+                  { code: "COMP712", name: "Computer Programming 1", cr: "3 Cr" },
+                  { code: "BUSI712", name: "Managerial Accounting 1", cr: "3 Cr" }
                 ]
               },
               {
-                term: "Trimester 5",
+                term: "Second Trimester",
                 courses: [
-                  { code: "NETW201", name: "Data Communications & Computer Networks", cr: "3 Cr" },
-                  { code: "WEB202", name: "Dynamic Web Application Development", cr: "3 Cr" },
-                  { code: "FINC201", name: "Principles of Corporate Finance", cr: "3 Cr" },
-                  { code: "HUMN101", name: "Human Rights Principles", cr: "3 Cr" }
+                  { code: "COMP721", name: "Database Management Systems", cr: "3 Cr" },
+                  { code: "COMP722", name: "Human-Computer Interaction", cr: "3 Cr" },
+                  { code: "BUSI721", name: "Financial Management", cr: "3 Cr" },
+                  { code: "STAT721", name: "Business Statistics", cr: "3 Cr" }
                 ]
               },
               {
-                term: "Trimester 6",
+                term: "Third Trimester",
                 courses: [
-                  { code: "HCID201", name: "Human-Computer Interaction (HCI) & UI/UX", cr: "3 Cr" },
-                  { code: "EBUS201", name: "E-Business & Digital Commerce", cr: "3 Cr" },
-                  { code: "OPER201", name: "Operations & Supply Chain Management", cr: "3 Cr" },
-                  { code: "ELEC1", name: "Major Elective I (Choose from list below)", cr: "3 Cr" }
+                  { code: "COMP731", name: "Systems Analysis and Design 1", cr: "3 Cr" },
+                  { code: "COMP732", name: "IT Infrastructure", cr: "3 Cr" },
+                  { code: "BSBI733", name: "Principles of Marketing", cr: "3 Cr" },
+                  { code: "ELEC-B1", name: "Major Elective 1 (Business Component)", cr: "3 Cr" }
                 ]
               }
             ]
           },
           {
-            year: "Year 3 (Trimesters 7, 8 & 9)",
+            year: "Third Year (Trimesters 7, 8 & 9)",
             terms: [
               {
-                term: "Trimester 7",
+                term: "First Trimester",
                 courses: [
-                  { code: "ERPS301", name: "Enterprise Resource Planning (ERP Systems)", cr: "3 Cr" },
-                  { code: "BINT301", name: "Business Intelligence & Data Warehousing", cr: "3 Cr" },
-                  { code: "ITPM301", name: "IT Project Management", cr: "3 Cr" },
-                  { code: "ELEC2", name: "Major Elective II (Choose from list below)", cr: "3 Cr" }
+                  { code: "BUSI811", name: "Islamic Banking and Finance 1", cr: "3 Cr" },
+                  { code: "BSBI812", name: "Business Process Management", cr: "3 Cr" },
+                  { code: "BSBI813", name: "Bahrain Business Law and Taxation", cr: "3 Cr" },
+                  { code: "COMP811", name: "Systems Analysis and Design 2", cr: "3 Cr" },
+                  { code: "COMP812", name: "IS Strategy, Acquisition and Management", cr: "3 Cr" }
                 ]
               },
               {
-                term: "Trimester 8",
+                term: "Second Trimester",
                 courses: [
-                  { code: "ISEC301", name: "Information Security & Risk Management", cr: "3 Cr" },
-                  { code: "MOBI301", name: "Mobile Application Development", cr: "3 Cr" },
-                  { code: "RESM301", name: "Research Methods in Business Informatics", cr: "3 Cr" },
-                  { code: "ELEC3", name: "Free Elective I (Choose from list below)", cr: "3 Cr" }
+                  { code: "BSBI821", name: "Operations Management", cr: "3 Cr" },
+                  { code: "COMP821", name: "Information Management, Security, and Support", cr: "3 Cr" },
+                  { code: "COMP822", name: "Web Design and Development", cr: "3 Cr" },
+                  { code: "COMP823", name: "Project Management", cr: "3 Cr" },
+                  { code: "COMP824", name: "Data Mining & Warehousing", cr: "3 Cr" },
+                  { code: "COMP825", name: "FinTech", cr: "3 Cr" }
                 ]
               },
               {
-                term: "Trimester 9",
+                term: "Third Trimester",
                 courses: [
-                  { code: "SISM301", name: "Strategic Information Systems Management", cr: "3 Cr" },
-                  { code: "DATA302", name: "Data Mining & Predictive Analytics", cr: "3 Cr" },
-                  { code: "ETHC301", name: "IT Ethics & Cyber Law", cr: "3 Cr" },
-                  { code: "ELEC4", name: "Major Elective III (Choose from list below)", cr: "3 Cr" }
+                  { code: "BSBI833", name: "BSBI Capstone Project A", cr: "3 Cr" },
+                  { code: "BUSI831", name: "Business Analytics", cr: "3 Cr" },
+                  { code: "COMP832", name: "Enterprise Systems Architecture and Applications", cr: "3 Cr" },
+                  { code: "ELEC-I1", name: "Major Elective 2 (Informatics Component)", cr: "3 Cr" }
                 ]
               }
             ]
           },
           {
-            year: "Year 4 (Trimesters 10, 11 & 12)",
+            year: "Fourth Year (Trimesters 10 & 11)",
             terms: [
               {
-                term: "Trimester 10",
+                term: "First Trimester",
                 courses: [
-                  { code: "PROJ401", name: "Capstone Graduation Project I", cr: "3 Cr" },
-                  { code: "CLOU401", name: "Cloud Computing & Enterprise Infrastructure", cr: "3 Cr" },
-                  { code: "ENTR401", name: "Technopreneurship & Innovation", cr: "3 Cr" }
+                  { code: "BSBI843", name: "BSBI Capstone Project B", cr: "3 Cr" },
+                  { code: "COMP841", name: "Cloud Computing", cr: "3 Cr" },
+                  { code: "ELEC-I2", name: "Major Elective 3 (Informatics Component)", cr: "3 Cr" }
                 ]
               },
               {
-                term: "Trimester 11",
+                term: "Second Trimester",
                 courses: [
-                  { code: "PROJ402", name: "Capstone Graduation Project II", cr: "3 Cr" },
-                  { code: "KMGT401", name: "Knowledge Management Systems", cr: "3 Cr" },
-                  { code: "ELEC5", name: "Free Elective II (Choose from list below)", cr: "3 Cr" }
-                ]
-              },
-              {
-                term: "Trimester 12",
-                courses: [
-                  { code: "INTR402", name: "Practicum / Industry Internship (Full Term)", cr: "6 Cr" }
+                  { code: "BSBI842", name: "Business Informatics Internship (Practicum)", cr: "6 Cr" }
                 ]
               }
             ]
           }
         ],
-        electivesNote: "Students must complete 3 Major Electives (9 Cr) + 2 Free Electives (6 Cr):",
+        electivesNote: "Official BSBI Elective Courses (1 from Business Component + 2 from Informatics Component):",
         electives: [
-          { code: "BINF411", name: "Customer Relationship Management (CRM) Systems", cr: "3 Cr" },
-          { code: "BINF412", name: "FinTech & Digital Banking Systems", cr: "3 Cr" },
-          { code: "BINF413", name: "Social Media Analytics & Digital Marketing", cr: "3 Cr" },
-          { code: "BINF414", name: "Enterprise Architecture & IT Governance (COBIT)", cr: "3 Cr" },
-          { code: "BINF415", name: "Artificial Intelligence Applications in Business", cr: "3 Cr" },
-          { code: "FREE101", name: "Foreign Language / Psychology / Environmental Studies (Free Elective)", cr: "3 Cr" }
+          { code: "BUSI-EL", name: "Business Innovation (Major Elective 1 - Business Component)", cr: "3 Cr" },
+          { code: "COMP-EL1", name: "Multimedia Development (Major Elective 2/3 - Informatics Component)", cr: "3 Cr" },
+          { code: "COMP-EL2", name: "Open-Source Software (Major Elective 2/3 - Informatics Component)", cr: "3 Cr" }
         ]
       },
 
-      // 2. UOB - B.Sc. in Computer Science (نظام فصلين في السنة - 2 Semesters/Year)
-      "uob_computer_science": {
-        system: "2 Semesters / Year (8 Semesters Total)",
-        credits: "133 Credit Hours",
+      // 2. UOB - B.Sc. in Computer Science (Official Academic Plan)
+      "uob_bscs": {
+        system: "2 Semesters / Year (8 Semesters)",
+        credits: "132 Credit Hours",
+        pdfUrl: "https://cit.uob.edu.bh/undergraduate/b-sc-in-computer-science/",
         years: [
           {
             year: "Year 1 (Semesters 1 & 2)",
@@ -826,7 +825,7 @@
               {
                 term: "Semester 1",
                 courses: [
-                  { code: "ITCS113", name: "Computer Programming I (Java)", cr: "3 Cr" },
+                  { code: "ITCS113", name: "Computer Programming I", cr: "3 Cr" },
                   { code: "MATHS101", name: "Calculus I", cr: "3 Cr" },
                   { code: "PHYCS101", name: "General Physics I", cr: "4 Cr" },
                   { code: "ENGL154", name: "Language Development I", cr: "3 Cr" },
@@ -836,7 +835,7 @@
               {
                 term: "Semester 2",
                 courses: [
-                  { code: "ITCS114", name: "Computer Programming II (OOP)", cr: "3 Cr" },
+                  { code: "ITCS114", name: "Computer Programming II", cr: "3 Cr" },
                   { code: "MATHS102", name: "Calculus II", cr: "3 Cr" },
                   { code: "ITCE112", name: "Digital Logic Design", cr: "3 Cr" },
                   { code: "ENGL155", name: "Language Development II", cr: "3 Cr" },
@@ -879,8 +878,8 @@
                   { code: "ITCS347", name: "Analysis and Design of Algorithms", cr: "3 Cr" },
                   { code: "ITCS325", name: "Operating Systems", cr: "3 Cr" },
                   { code: "ITCE314", name: "Computer Networks I", cr: "3 Cr" },
-                  { code: "ITCS333", name: "Internet Software Development (Web)", cr: "3 Cr" },
-                  { code: "ELEC1", name: "Major Elective I (From list below)", cr: "3 Cr" }
+                  { code: "ITCS333", name: "Internet Software Development", cr: "3 Cr" },
+                  { code: "ITCS-EL1", name: "Major Elective I", cr: "3 Cr" }
                 ]
               },
               {
@@ -889,8 +888,8 @@
                   { code: "ITCS389", name: "Software Engineering II", cr: "3 Cr" },
                   { code: "ITCS341", name: "Programming Languages", cr: "3 Cr" },
                   { code: "ITCS396", name: "Artificial Intelligence", cr: "3 Cr" },
-                  { code: "ITCS399", name: "Practical Industrial Training (Summer)", cr: "1 Cr" },
-                  { code: "ELEC2", name: "Major Elective II (From list below)", cr: "3 Cr" }
+                  { code: "ITCS399", name: "Practical Training (Internship)", cr: "1 Cr" },
+                  { code: "ITCS-EL2", name: "Major Elective II", cr: "3 Cr" }
                 ]
               }
             ]
@@ -904,7 +903,7 @@
                   { code: "ITCS498", name: "Senior Project I", cr: "3 Cr" },
                   { code: "ITCS442", name: "Theory of Computation", cr: "3 Cr" },
                   { code: "ITCS461", name: "Computer & Network Security", cr: "3 Cr" },
-                  { code: "ELEC3", name: "Major Elective III (From list below)", cr: "3 Cr" }
+                  { code: "ITCS-EL3", name: "Major Elective III", cr: "3 Cr" }
                 ]
               },
               {
@@ -912,324 +911,44 @@
                 courses: [
                   { code: "ITCS499", name: "Senior Project II", cr: "3 Cr" },
                   { code: "ITCS422", name: "Parallel & Distributed Computing", cr: "3 Cr" },
-                  { code: "ELEC4", name: "Major Elective IV (From list below)", cr: "3 Cr" },
-                  { code: "ELEC5", name: "Free University Elective", cr: "3 Cr" }
+                  { code: "ITCS-EL4", name: "Major Elective IV", cr: "3 Cr" },
+                  { code: "GEN-EL", name: "General Studies Elective", cr: "3 Cr" }
                 ]
               }
             ]
           }
         ],
-        electivesNote: "UOB Computer Science Technical & Free Electives (Choose 4 Major + 1 Free):",
+        electivesNote: "Official UOB Computer Science Major Electives (Choose 4 Courses):",
         electives: [
-          { code: "ITCS473", name: "Machine Learning & Deep Learning", cr: "3 Cr" },
-          { code: "ITCS489", name: "Big Data Analytics & Data Mining", cr: "3 Cr" },
-          { code: "ITCS444", name: "Mobile Application Development (iOS/Android)", cr: "3 Cr" },
-          { code: "ITCS453", name: "Computer Graphics & Game Development", cr: "3 Cr" },
-          { code: "ITCS465", name: "Digital Forensics & Ethical Hacking", cr: "3 Cr" },
-          { code: "ITCS435", name: "Cloud Computing Architecture", cr: "3 Cr" }
+          { code: "ITCS473", name: "Machine Learning", cr: "3 Cr" },
+          { code: "ITCS489", name: "Data Mining & Big Data Analytics", cr: "3 Cr" },
+          { code: "ITCS444", name: "Mobile Application Development", cr: "3 Cr" },
+          { code: "ITCS453", name: "Computer Graphics", cr: "3 Cr" },
+          { code: "ITCS435", name: "Cloud Computing", cr: "3 Cr" }
         ]
       }
     };
 
-    // دالة توليد خطة ذكية حسب نظام كل جامعة (فصلين أو 3 فصول) مع قسم Electives مستقل لبقية التخصصات
-    function buildPlanForMajor(majorName, uniName, uniSystem, uniUrl) {
+    function getStudyPlan(majorName, uniName, uniSystem, uniUrl) {
       const m = majorName.toLowerCase();
       const u = uniName.toLowerCase();
 
-      // مطابقة الخطط الحرفية المحفوظة أولاً
       if (u.includes('utb') && m.includes('business informatics')) {
-        return { ...exactStudyPlans.utb_business_informatics, url: uniUrl };
+        return verifiedStudyPlans.utb_bsbi;
       }
       if (u.includes('university of bahrain') && m.includes('computer science')) {
-        return { ...exactStudyPlans.uob_computer_science, url: uniUrl };
+        return verifiedStudyPlans.uob_bscs;
       }
 
-      const isTrimester = uniSystem.includes('3 Trimesters');
-      const termsPerYear = isTrimester ? 3 : 2;
-      const termLabel = isTrimester ? 'Trimester' : 'Semester';
-
-      // تحديد المقررات وقائمة الـ Electives حسب التخصص الدقيق
-      let domainCourses = [];
-      let domainElectives = [];
-      let credits = isTrimester ? "132 Credit Hours" : "128 – 135 Credit Hours";
-
-      if (m.includes('business informatics') || m.includes('information systems') || m.includes('management information')) {
-        domainCourses = [
-          [
-            { code: "CS101", name: "Introduction to Programming", cr: "3 Cr" },
-            { code: "MGT101", name: "Principles of Management", cr: "3 Cr" },
-            { code: "ACC101", name: "Financial Accounting", cr: "3 Cr" },
-            { code: "WEB101", name: "Web Design (HTML, CSS, JavaScript)", cr: "3 Cr" }
-          ],
-          [
-            { code: "DBS201", name: "Database Management Systems (SQL)", cr: "3 Cr" },
-            { code: "SAD202", name: "Systems Analysis & Design", cr: "3 Cr" },
-            { code: "OOP201", name: "Object-Oriented Programming", cr: "3 Cr" },
-            { code: "NET201", name: "Business Data Communications & Networks", cr: "3 Cr" }
-          ],
-          [
-            { code: "ERP301", name: "Enterprise Resource Planning (ERP)", cr: "3 Cr" },
-            { code: "BIA302", name: "Business Intelligence & Data Analytics", cr: "3 Cr" },
-            { code: "EBM303", name: "E-Commerce & Digital Business", cr: "3 Cr" },
-            { code: "PM304", name: "IT Project Management", cr: "3 Cr" }
-          ],
-          [
-            { code: "SEC401", name: "Information Security & Governance", cr: "3 Cr" },
-            { code: "PRJ490", name: "Graduation Capstone Project I & II", cr: "6 Cr" },
-            { code: "INT499", name: "Industry Internship / Practicum", cr: "6 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "ELEC410", name: "FinTech & Digital Banking Systems", cr: "3 Cr" },
-          { code: "ELEC412", name: "Enterprise Cloud Computing", cr: "3 Cr" },
-          { code: "ELEC415", name: "UX/UI & Human-Computer Interaction", cr: "3 Cr" },
-          { code: "ELEC418", name: "Digital Marketing & CRM Analytics", cr: "3 Cr" }
-        ];
-      } else if (m.includes('computer') || m.includes('software') || m.includes('cyber') || m.includes('ict') || m.includes('data') || m.includes('network') || m.includes('cloud')) {
-        domainCourses = [
-          [
-            { code: "CS111", name: "Structured Programming (Python / C++)", cr: "3 Cr" },
-            { code: "MTH101", name: "Calculus & Discrete Mathematics", cr: "3 Cr" },
-            { code: "DLD102", name: "Digital Logic & Computer Architecture", cr: "3 Cr" },
-            { code: "CS112", name: "Object-Oriented Programming (Java)", cr: "3 Cr" }
-          ],
-          [
-            { code: "CS214", name: "Data Structures & Algorithms", cr: "3 Cr" },
-            { code: "DB201", name: "Relational Database Systems", cr: "3 Cr" },
-            { code: "OS202", name: "Operating Systems", cr: "3 Cr" },
-            { code: "NET210", name: "Computer Networks & Security", cr: "3 Cr" }
-          ],
-          [
-            { code: "SE301", name: "Software Engineering & Agile Development", cr: "3 Cr" },
-            { code: "AI302", name: "Artificial Intelligence & Machine Learning", cr: "3 Cr" },
-            { code: "WEB305", name: "Full-Stack Web & Mobile Development", cr: "3 Cr" },
-            { code: "SEC310", name: "Cyber Security & Cryptography", cr: "3 Cr" }
-          ],
-          [
-            { code: "CLD401", name: "Cloud Computing & Distributed Systems", cr: "3 Cr" },
-            { code: "PRJ498", name: "Senior Graduation Project I & II", cr: "6 Cr" },
-            { code: "INT499", name: "Industrial Practical Training", cr: "3 – 6 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "CS451", name: "Ethical Hacking & Penetration Testing", cr: "3 Cr" },
-          { code: "CS455", name: "Deep Learning & Computer Vision", cr: "3 Cr" },
-          { code: "CS460", name: "Internet of Things (IoT) Systems", cr: "3 Cr" },
-          { code: "CS465", name: "Blockchain & Distributed Ledger Tech", cr: "3 Cr" }
-        ];
-      } else if (m.includes('engineering') || m.includes('mechatronics') || m.includes('surveying') || m.includes('automotive')) {
-        credits = "140 – 155 Credit Hours";
-        domainCourses = [
-          [
-            { code: "ENG101", name: "Engineering Calculus I & II", cr: "6 Cr" },
-            { code: "PHY101", name: "Engineering Physics & Mechanics", cr: "4 Cr" },
-            { code: "CHM101", name: "General Chemistry for Engineers", cr: "4 Cr" },
-            { code: "CAD102", name: "Engineering Drawing & AutoCAD", cr: "3 Cr" }
-          ],
-          [
-            { code: "MTH201", name: "Differential Equations & Linear Algebra", cr: "3 Cr" },
-            { code: "MEC201", name: "Statics, Dynamics & Strength of Materials", cr: "6 Cr" },
-            { code: "ELC202", name: "Electric Circuits & Instrumentation", cr: "3 Cr" },
-            { code: "THM203", name: "Thermodynamics & Fluid Mechanics", cr: "3 Cr" }
-          ],
-          [
-            { code: "CNT301", name: "Control Systems & Automation", cr: "3 Cr" },
-            { code: "DES302", name: "Engineering Design & Simulation Labs", cr: "6 Cr" },
-            { code: "MGT305", name: "Engineering Economics & Project Management", cr: "3 Cr" }
-          ],
-          [
-            { code: "PRJ490", name: "Senior Engineering Design Project I & II", cr: "6 Cr" },
-            { code: "TRN499", name: "Industrial Engineering Field Training", cr: "3 – 6 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "ENG410", name: "Renewable Energy & Sustainable Systems", cr: "3 Cr" },
-          { code: "ENG415", name: "Robotics & Industrial PLC Automation", cr: "3 Cr" },
-          { code: "ENG420", name: "Quality Control & Six Sigma", cr: "3 Cr" },
-          { code: "ENG425", name: "Smart Building & Infrastructure Tech", cr: "3 Cr" }
-        ];
-      } else if (m.includes('law') || m.includes('llb') || m.includes('political')) {
-        domainCourses = [
-          [
-            { code: "LAW101", name: "Introduction to Law (المدخل لدراسة القانون)", cr: "3 Cr" },
-            { code: "LAW102", name: "Constitutional Law (القانون الدستوري)", cr: "3 Cr" },
-            { code: "LAW105", name: "Islamic Jurisprudence (أصول الفقه الإسلامي)", cr: "3 Cr" },
-            { code: "LAW108", name: "Legal Terminology (المصطلحات القانونية)", cr: "3 Cr" }
-          ],
-          [
-            { code: "LAW201", name: "Civil Law: Obligations (القانون المدني - الالتزامات)", cr: "6 Cr" },
-            { code: "LAW204", name: "General Penal Law (قانون العقوبات العام)", cr: "3 Cr" },
-            { code: "LAW206", name: "Administrative Law (القانون الإداري)", cr: "3 Cr" },
-            { code: "LAW208", name: "Public International Law (القانون الدولي العام)", cr: "3 Cr" }
-          ],
-          [
-            { code: "LAW301", name: "Commercial Law & Companies (القانون التجاري والشركات)", cr: "3 Cr" },
-            { code: "LAW303", name: "Civil & Commercial Procedures (المرافعات المدنية والتجارية)", cr: "3 Cr" },
-            { code: "LAW305", name: "Labor Law & Social Insurance (قانون العمل والتأمينات)", cr: "3 Cr" },
-            { code: "LAW307", name: "Special Penal Law (قانون العقوبات الخاص)", cr: "3 Cr" }
-          ],
-          [
-            { code: "LAW401", name: "Criminal Procedures (الإجراءات الجنائية)", cr: "3 Cr" },
-            { code: "LAW403", name: "Private International Law (القانون الدولي الخاص)", cr: "3 Cr" },
-            { code: "LAW490", name: "Moot Court & Practical Legal Clinic (المحكمة الصورية)", cr: "3 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "LAW411", name: "Commercial Arbitration (التحكيم التجاري الدولي)", cr: "3 Cr" },
-          { code: "LAW414", name: "Intellectual Property Law (حقوق الملكية الفكرية)", cr: "3 Cr" },
-          { code: "LAW418", name: "Cybercrime & Electronic Transactions Law (جرائم تقنية المعلومات)", cr: "3 Cr" },
-          { code: "LAW422", name: "Banking & Maritime Law (القانون البحري والمصرفي)", cr: "3 Cr" }
-        ];
-      } else if (m.includes('medicine') || m.includes('nursing') || m.includes('pharmacy') || m.includes('physiotherapy') || m.includes('medical') || m.includes('midwifery') || m.includes('radiologic')) {
-        credits = m.includes('medicine') ? "210 Credit Hours (6 Years)" : "135 – 145 Credit Hours";
-        domainCourses = [
-          [
-            { code: "MED101", name: "Human Anatomy & Histology I & II", cr: "6 Cr" },
-            { code: "MED102", name: "Human Physiology & Cell Biology", cr: "6 Cr" },
-            { code: "MED104", name: "Medical Biochemistry & Genetics", cr: "3 Cr" },
-            { code: "MED106", name: "Medical Terminology & Healthcare Ethics", cr: "3 Cr" }
-          ],
-          [
-            { code: "MED201", name: "General & Systemic Pathology", cr: "6 Cr" },
-            { code: "MED203", name: "Pharmacology & Clinical Therapeutics", cr: "4 Cr" },
-            { code: "MED205", name: "Medical Microbiology & Immunology", cr: "4 Cr" },
-            { code: "CLN208", name: "Clinical Assessment & Diagnostic Skills", cr: "3 Cr" }
-          ],
-          [
-            { code: "CLN301", name: "Clinical Simulation & Lab Practice", cr: "6 Cr" },
-            { code: "CLN304", name: "Specialized Clinical Care Modules", cr: "6 Cr" },
-            { code: "RES308", name: "Epidemiology & Evidence-Based Practice", cr: "3 Cr" }
-          ],
-          [
-            { code: "ROT401", name: "Hospital Clinical Rotations (Medicine, Surgery, Pediatrics)", cr: "12 Cr" },
-            { code: "INT499", name: "Clinical Internship & Graduation Thesis", cr: "6 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "HLT410", name: "Emergency & Critical Care Management", cr: "3 Cr" },
-          { code: "HLT414", name: "Health Informatics & Digital Health", cr: "3 Cr" },
-          { code: "HLT418", name: "Public Health & Nutrition", cr: "3 Cr" }
-        ];
-      } else if (m.includes('design') || m.includes('architecture') || m.includes('media') || m.includes('communication') || m.includes('film') || m.includes('arts') || m.includes('fashion')) {
-        domainCourses = [
-          [
-            { code: "DES101", name: "Design Fundamentals & Color Theory", cr: "3 Cr" },
-            { code: "DES102", name: "Freehand Drawing & Visual Perception", cr: "3 Cr" },
-            { code: "ART105", name: "History of Art, Architecture & Media", cr: "3 Cr" },
-            { code: "DIG108", name: "Digital Design Tools (Adobe Suite / CAD)", cr: "3 Cr" }
-          ],
-          [
-            { code: "STD201", name: "Design / Media Studio I & II", cr: "6 Cr" },
-            { code: "TYP203", name: "Typography, Layout & Branding", cr: "3 Cr" },
-            { code: "MOD205", name: "3D Modeling, Photography & Video Production", cr: "3 Cr" }
-          ],
-          [
-            { code: "STD301", name: "Advanced Specialized Studio III & IV", cr: "6 Cr" },
-            { code: "UXD304", name: "Interactive Media & UI/UX Design", cr: "3 Cr" },
-            { code: "PRO308", name: "Professional Practice & Project Management", cr: "3 Cr" }
-          ],
-          [
-            { code: "PRT401", name: "Portfolio Development & Exhibition", cr: "3 Cr" },
-            { code: "PRJ499", name: "Senior Graduation Design Thesis", cr: "6 Cr" },
-            { code: "INT495", name: "Creative Studio Internship", cr: "3 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "DES411", name: "Motion Graphics & 3D Animation", cr: "3 Cr" },
-          { code: "DES415", name: "Sustainable & Green Design", cr: "3 Cr" },
-          { code: "DES419", name: "Digital Advertising & Social Campaigns", cr: "3 Cr" }
-        ];
-      } else if (m.includes('business') || m.includes('accounting') || m.includes('finance') || m.includes('management') || m.includes('marketing') || m.includes('economics') || m.includes('logistics') || m.includes('banking') || m.includes('fintech')) {
-        domainCourses = [
-          [
-            { code: "MGT101", name: "Principles of Management", cr: "3 Cr" },
-            { code: "ACC101", name: "Financial Accounting I", cr: "3 Cr" },
-            { code: "ECO101", name: "Microeconomics & Macroeconomics", cr: "6 Cr" },
-            { code: "BUS105", name: "Business Mathematics & Communication", cr: "3 Cr" }
-          ],
-          [
-            { code: "MKT201", name: "Principles of Marketing", cr: "3 Cr" },
-            { code: "FIN201", name: "Corporate Financial Management", cr: "3 Cr" },
-            { code: "ACC202", name: "Managerial Accounting", cr: "3 Cr" },
-            { code: "MIS205", name: "Management Information Systems", cr: "3 Cr" }
-          ],
-          [
-            { code: "HRM301", name: "Human Resource Management", cr: "3 Cr" },
-            { code: "OPM302", name: "Operations & Supply Chain Management", cr: "3 Cr" },
-            { code: "LAW304", name: "Commercial & Business Law", cr: "3 Cr" },
-            { code: "STA306", name: "Business Research & Analytics", cr: "3 Cr" }
-          ],
-          [
-            { code: "STR401", name: "Strategic Management & Policy", cr: "3 Cr" },
-            { code: "ENT405", name: "Entrepreneurship & Small Business", cr: "3 Cr" },
-            { code: "INT499", name: "Corporate Internship & Graduation Project", cr: "6 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "BUS412", name: "Islamic Banking & Takaful", cr: "3 Cr" },
-          { code: "BUS415", name: "Investment & Portfolio Management", cr: "3 Cr" },
-          { code: "BUS418", name: "Digital Marketing & E-Commerce", cr: "3 Cr" },
-          { code: "BUS422", name: "International Trade & Global Logistics", cr: "3 Cr" }
-        ];
-      } else {
-        domainCourses = [
-          [
-            { code: "EDU101", name: "Foundations of Specialization & Academic Writing", cr: "6 Cr" },
-            { code: "PSY102", name: "Developmental & Educational Psychology", cr: "3 Cr" },
-            { code: "RES105", name: "Introduction to Social & Academic Research", cr: "3 Cr" }
-          ],
-          [
-            { code: "SPC201", name: "Core Specialization Courses I & II", cr: "6 Cr" },
-            { code: "MTH204", name: "Curriculum Design & Teaching Methodologies", cr: "3 Cr" },
-            { code: "TEC206", name: "Educational Technology & Digital Tools", cr: "3 Cr" }
-          ],
-          [
-            { code: "SPC301", name: "Advanced Specialization Seminars", cr: "6 Cr" },
-            { code: "ASS304", name: "Measurement, Evaluation & Assessment", cr: "3 Cr" },
-            { code: "MGT308", name: "Classroom & Organizational Leadership", cr: "3 Cr" }
-          ],
-          [
-            { code: "PRC490", name: "Field Practicum / Teaching Internship", cr: "9 Cr" },
-            { code: "PRJ499", name: "Senior Graduation Research Thesis", cr: "3 Cr" }
-          ]
-        ];
-        domainElectives = [
-          { code: "GEN410", name: "Inclusive Education & Special Needs", cr: "3 Cr" },
-          { code: "GEN415", name: "Comparative Studies & Cross-Cultural Comm.", cr: "3 Cr" },
-          { code: "GEN420", name: "Leadership & Community Development", cr: "3 Cr" }
-        ];
-      }
-
-      // تقسيم المقررات على الفصول (فصلين أو 3 فصول في السنة)
-      const builtYears = domainCourses.map((yearCourses, idx) => {
-        const terms = [];
-        const chunkSize = Math.ceil(yearCourses.length / termsPerYear);
-        for (let t = 0; t < termsPerYear; t++) {
-          const slice = yearCourses.slice(t * chunkSize, (t + 1) * chunkSize);
-          if (slice.length > 0) {
-            terms.push({
-              term: `${termLabel} ${(idx * termsPerYear) + t + 1}`,
-              courses: slice
-            });
-          }
-        }
-        return {
-          year: `Year ${idx + 1} (${termsPerYear} ${termLabel}s)`,
-          terms: terms
-        };
-      });
-
+      // لبقية التخصصات: توجيه صادق ومباشر لملف الكتالوج الرسمي للجامعة بدون بيانات تخمينية
       return {
         system: uniSystem,
-        credits: credits,
-        years: builtYears,
-        electivesNote: "Elective Courses (Choose required credits from Major & Free Electives):",
-        electives: domainElectives,
-        url: uniUrl
+        credits: "Official University Catalogue",
+        pdfUrl: uniUrl,
+        isPendingCatalog: true
       };
     }
 
-    // إضافة زر الخطة الدراسية لكل تخصص
     function attachStudyPlanButtons() {
       const uniCards = document.querySelectorAll('.uni-card');
       uniCards.forEach(card => {
@@ -1249,7 +968,7 @@
     }
 
     function openStudyPlan(majorName, uniName, uniSystem, uniUrl) {
-      const plan = buildPlanForMajor(majorName, uniName, uniSystem, uniUrl);
+      const plan = getStudyPlan(majorName, uniName, uniSystem, uniUrl);
       document.getElementById('planMajorTitle').textContent = majorName;
       document.getElementById('planUniTitle').textContent = uniName;
 
@@ -1261,7 +980,18 @@
       const container = document.getElementById('planYearsContainer');
       container.innerHTML = '';
 
-      // عرض السنوات والفصول الدراسية
+      if (plan.isPendingCatalog) {
+        container.innerHTML = `
+          <div class="catalog-notice">
+            <strong>📄 Official Study Plan & Electives</strong><br><br>
+            To ensure 100% accuracy of course codes, prerequisites, and elective lists for <strong>${majorName}</strong> at <strong>${uniName}</strong>, please view the official programme specification directly from the university's academic portal below.
+          </div>
+        `;
+        document.getElementById('planOfficialUrl').href = plan.pdfUrl;
+        document.getElementById('studyPlanModal').style.display = 'flex';
+        return;
+      }
+
       plan.years.forEach(yr => {
         let termsHtml = yr.terms.map(t => {
           let coursesHtml = t.courses.map(c => `
@@ -1287,7 +1017,6 @@
         `;
       });
 
-      // قسم مواد الـ Electives مفصول بوضوح في الأسفل
       if (plan.electives && plan.electives.length > 0) {
         const electivesHtml = plan.electives.map(el => `
           <li>
@@ -1305,7 +1034,7 @@
         `;
       }
 
-      document.getElementById('planOfficialUrl').href = plan.url;
+      document.getElementById('planOfficialUrl').href = plan.pdfUrl;
       document.getElementById('studyPlanModal').style.display = 'flex';
     }
 
