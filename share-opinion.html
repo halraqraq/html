@@ -6,42 +6,48 @@
   <title>Path Finder BH - Share Opinion</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; }
-    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .container { flex: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
+    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
+    .container { flex: 1; max-width: 520px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
     
     .row { display: flex; gap: 10px; }
-    .field { background-color: #ffffff; border: 1px solid #edf2f4; padding: 14px 16px; border-radius: 16px; width: 100%; font-size: 13px; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .field { background-color: #ffffff; border: 1.5px solid #edf2f4; padding: 14px 16px; border-radius: 16px; width: 100%; font-size: 13.5px; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); color: #2b2d42; transition: border-color 0.2s; }
     .field:focus { border-color: #d90429; }
     textarea.field { height: 120px; resize: none; }
     
-    .btn-group { display: flex; gap: 12px; margin-top: 10px; }
-    .form-btn { flex: 1; padding: 14px; border-radius: 16px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: opacity 0.2s; }
+    .btn-group { display: flex; gap: 12px; margin-top: 8px; }
+    .form-btn { flex: 1; padding: 14px; border-radius: 16px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: opacity 0.2s; }
     .btn-send { background-color: #d90429; color: white; }
     .btn-cancel { background-color: #e0e0e0; color: #2b2d42; }
     .form-btn:hover { opacity: 0.9; }
 
-    .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; }
-    .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.85; }
+    .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
+    .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
+    .navbar a:hover { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <header class="header"></header>
+  <header class="header">Share Your Experience</header>
 
   <main class="container">
+    <!-- اختيار التخصص من جميع تخصصات البحرين -->
+    <select id="majorSelect" class="field" required>
+      <option value="" disabled selected>Select your major * (اختر التخصص)</option>
+    </select>
+
     <div class="row">
-      <input type="text" class="field" placeholder="Your status">
-      <input type="text" class="field" placeholder="Graduation year">
+      <input type="text" id="statusInput" class="field" placeholder="Your status (e.g., Student / Graduate)">
+      <input type="text" id="yearInput" class="field" placeholder="Study / graduation year">
     </div>
 
-    <input type="text" class="field" placeholder="Hardest part?">
-    <input type="text" class="field" placeholder="Study nature (theory/practical)">
-    <input type="text" class="field" placeholder="Job market opportunities">
-    <textarea class="field" placeholder="Your advice for a student considering this major *"></textarea>
+    <input type="text" id="hardestInput" class="field" placeholder="Hardest part?">
+    <input type="text" id="natureInput" class="field" placeholder="Study nature (theory/practical, projects/exams...)">
+    <input type="text" id="jobsInput" class="field" placeholder="Job market — what do graduates work as?">
+    <textarea id="adviceInput" class="field" placeholder="Your advice for a student considering this major *"></textarea>
 
     <div class="btn-group">
-      <a href="opinions.html" class="form-btn btn-send">Send</a>
+      <button type="button" class="form-btn btn-send" onclick="submitOpinion()">Send</button>
       <a href="opinions.html" class="form-btn btn-cancel">Cancel</a>
     </div>
   </main>
@@ -51,6 +57,101 @@
     <a href="index.html">Home</a>
     <a href="#">More</a>
   </nav>
+
+  <script>
+    const allBahrainMajors = [
+      "Business Informatics (معلوماتية الأعمال)",
+      "Computer Science (علوم الحاسوب)",
+      "Information Technology (تقنية المعلومات)",
+      "Information Systems (نظم المعلومات)",
+      "Software Engineering (هندسة البرمجيات)",
+      "Cyber Security (الأمن السيبراني)",
+      "Data Analytics & AI (تحليل البيانات والذكاء الاصطناعي)",
+      "Computer Engineering (هندسة الحاسوب)",
+      "Network Engineering (هندسة الشبكات)",
+      "Civil Engineering (الهندسة المدنية)",
+      "Mechanical Engineering (الهندسة الميكانيكية)",
+      "Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)",
+      "Chemical Engineering (الهندسة الكيميائية)",
+      "Mechatronics Engineering (هندسة الميكاترونكس)",
+      "Industrial Engineering (الهندسة الصناعية)",
+      "Environmental Engineering (الهندسة البيئية)",
+      "Architecture (العمارة)",
+      "Interior Design (التصميم الداخلي)",
+      "Graphic Design (التصميم الجرافيكي)",
+      "Multimedia & Visual Design (الوسائط المتعددة والتصميم المرئي)",
+      "Fashion Design (تصميم الأزياء)",
+      "Medicine - MD (الطب البشري)",
+      "Nursing (التمريض)",
+      "Pharmacy (الصيدلة)",
+      "Physiotherapy (العلاج الطبيعي)",
+      "Medical Laboratory Sciences (علوم المختبرات الطبية)",
+      "Law / LLB (الحقوق / القانون)",
+      "Political Science (العلوم السياسية)",
+      "Business Administration & Management (إدارة الأعمال)",
+      "International Business (الأعمال الدولية)",
+      "Accounting & Finance (المحاسبة والتمويل)",
+      "Banking & Finance (المصارف والتمويل)",
+      "Islamic Finance (التمويل الإسلامي)",
+      "Marketing & Digital Media (التسويق والإعلام الرقمي)",
+      "Human Resource Management (إدارة الموارد البشرية)",
+      "International Logistics Management (إدارة اللوجستيات)",
+      "Economics (الاقتصاد)",
+      "Mass Communication & Media (الإعلام والعلاقات العامة)",
+      "English Language & Literature (اللغة الإنجليزية وآدابها)",
+      "Arabic Language & Islamic Studies (اللغة العربية والدراسات الإسلامية)",
+      "Psychology & Sociology (علم النفس وعلم الاجتماع)",
+      "Education & Teaching (التربية والتعليم)",
+      "Mathematics & Actuarial Science (الرياضيات والعلوم الاكتوارية)",
+      "Physics, Chemistry & Biology (العلوم الأساسية)",
+      "Physical Education (التربية الرياضية)",
+      "Tourism (السياحة)"
+    ];
+
+    const majorSelect = document.getElementById('majorSelect');
+    allBahrainMajors.forEach(major => {
+      const opt = document.createElement('option');
+      opt.value = major;
+      opt.textContent = major;
+      majorSelect.appendChild(opt);
+    });
+
+    function submitOpinion() {
+      const major = document.getElementById('majorSelect').value;
+      const status = document.getElementById('statusInput').value.trim();
+      const year = document.getElementById('yearInput').value.trim();
+      const hardest = document.getElementById('hardestInput').value.trim();
+      const nature = document.getElementById('natureInput').value.trim();
+      const jobs = document.getElementById('jobsInput').value.trim();
+      const advice = document.getElementById('adviceInput').value.trim();
+
+      if (!major) {
+        alert("Please select a major first!");
+        return;
+      }
+      if (!advice) {
+        alert("Please write your advice for students before sending!");
+        return;
+      }
+
+      const newOpinion = {
+        major: major,
+        status: status || "Student",
+        year: year || "2026",
+        hardest: hardest,
+        nature: nature,
+        jobs: jobs,
+        advice: advice
+      };
+
+      const existing = JSON.parse(localStorage.getItem('pathFinderOpinions') || '[]');
+      existing.unshift(newOpinion);
+      localStorage.setItem('pathFinderOpinions', JSON.stringify(existing));
+
+      // الانتقال التلقائي لصفحة الآراء وعرض التجربة الجديدة في أول مستطيل أبيض
+      window.location.href = "opinions.html";
+    }
+  </script>
 
 </body>
 </html>
