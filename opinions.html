@@ -10,7 +10,6 @@
     .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
     .container { flex: 1; max-width: 540px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
     
-    /* الشريط العلوي الأحمر */
     .top-bar { background: linear-gradient(135deg, #ef233c, #d90429); padding: 15px; border-radius: 22px; display: flex; justify-content: space-between; align-items: center; gap: 10px; box-shadow: 0 6px 16px rgba(217, 4, 41, 0.2); }
     .major-select { background-color: #ffffff; border: none; padding: 12px 14px; border-radius: 14px; flex: 1; font-size: 13px; outline: none; color: #2b2d42; font-weight: 500; min-width: 0; }
     .share-btn { background-color: #ffffff; color: #d90429; text-decoration: none; padding: 12px 16px; border-radius: 14px; font-size: 13px; font-weight: 700; text-align: center; transition: background 0.2s; white-space: nowrap; }
@@ -18,24 +17,23 @@
     
     .results-info { font-size: 13px; font-weight: 600; color: #6c757d; padding: 0 5px; display: flex; justify-content: space-between; }
 
-    /* المستطيل الأبيض لعرض الرأي */
     .opinions-list { display: flex; flex-direction: column; gap: 14px; width: 100%; }
     .opinion-card { background-color: #ffffff; min-height: 135px; border-radius: 22px; padding: 18px 20px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #edf2f4; display: flex; flex-direction: column; gap: 10px; }
     
     .op-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; border-bottom: 1px solid #f1f3f5; padding-bottom: 10px; }
     .op-major { font-size: 15px; font-weight: 700; color: #d90429; }
     .op-badge { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; color: #495057; white-space: nowrap; }
+    .del-btn { background-color: #ffe3e3; color: #d90429; border: 1px solid #ffc9c9; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .del-btn:hover { background-color: #d90429; color: white; }
     
     .op-detail { font-size: 13px; line-height: 1.5; color: #495057; }
     .op-detail strong { color: #2b2d42; }
-    
     .op-advice { background-color: #fff0f3; border-left: 4px solid #d90429; padding: 10px 14px; border-radius: 10px; font-size: 13px; color: #2b2d42; font-weight: 500; margin-top: 4px; }
 
     .empty-card { background-color: #ffffff; height: 130px; border-radius: 22px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #edf2f4; display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 14px; text-align: center; padding: 20px; }
 
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
-    .navbar a:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -55,7 +53,6 @@
       <span>Real student reviews</span>
     </div>
 
-    <!-- هنا ستظهر المستطيلات البيضاء الممتلئة بالآراء -->
     <div class="opinions-list" id="opinionsContainer"></div>
   </main>
 
@@ -66,7 +63,6 @@
   </nav>
 
   <script>
-    // قائمة شاملة لجميع التخصصات في البحرين
     const allBahrainMajors = [
       "Business Informatics (معلوماتية الأعمال)",
       "Computer Science (علوم الحاسوب)",
@@ -116,7 +112,6 @@
       "Tourism (السياحة)"
     ];
 
-    // تعبئة القائمة المنسدلة بجميع التخصصات
     const selectEl = document.getElementById('majorFilter');
     allBahrainMajors.forEach(major => {
       const opt = document.createElement('option');
@@ -125,7 +120,6 @@
       selectEl.appendChild(opt);
     });
 
-    // تجارب افتراضية جاهزة في الصفحة قبل إضافة المستخدم لتجربته
     const defaultOpinions = [
       {
         major: "Business Informatics (معلوماتية الأعمال)",
@@ -134,7 +128,8 @@
         hardest: "Balancing programming courses with business analysis and system design projects.",
         nature: "60% Practical (coding, databases, web dev) & 40% Business Theory",
         jobs: "Systems Analyst, Business Analyst, Web Developer, IT Project Coordinator",
-        advice: "Focus on building real projects in HTML/JS and databases early—it helps a lot in your graduation project and internships!"
+        advice: "Focus on building real projects in HTML/JS and databases early—it helps a lot in your graduation project and internships!",
+        isDefault: true
       },
       {
         major: "Computer Science (علوم الحاسوب)",
@@ -143,47 +138,52 @@
         hardest: "Data Structures, Algorithms, and Discrete Mathematics in the second year.",
         nature: "Mostly practical coding labs, problem solving, and technical exams.",
         jobs: "Software Engineer, Full-Stack Developer, Cyber Security Analyst",
-        advice: "Practice coding every week outside university assignments and upload your work to GitHub."
+        advice: "Practice coding every week outside university assignments and upload your work to GitHub.",
+        isDefault: true
       }
     ];
 
-    function getStoredOpinions() {
-      const saved = localStorage.getItem('pathFinderOpinions');
-      const userOpinions = saved ? JSON.parse(saved) : [];
-      // وضع تجارب المستخدم الجديدة في الأعلى أولاً
-      return [...userOpinions, ...defaultOpinions];
+    function getUserOpinions() {
+      return JSON.parse(localStorage.getItem('pathFinderOpinions') || '[]');
+    }
+
+    function deleteOne(index) {
+      const list = getUserOpinions();
+      list.splice(index, 1);
+      localStorage.setItem('pathFinderOpinions', JSON.stringify(list));
+      renderOpinions();
     }
 
     function renderOpinions() {
       const selectedMajor = document.getElementById('majorFilter').value;
       const container = document.getElementById('opinionsContainer');
       const countEl = document.getElementById('opinionsCount');
-      const allOpinions = getStoredOpinions();
+      
+      const userList = getUserOpinions().map((item, i) => ({ ...item, realIndex: i, isDefault: false }));
+      const all = [...userList, ...defaultOpinions];
 
-      const filtered = selectedMajor === 'all'
-        ? allOpinions
-        : allOpinions.filter(op => op.major === selectedMajor);
+      const filtered = selectedMajor === 'all' ? all : all.filter(op => op.major === selectedMajor);
 
       countEl.textContent = `${filtered.length} ${filtered.length === 1 ? 'Experience' : 'Experiences'}`;
       container.innerHTML = '';
 
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="empty-card">
-            No student opinions posted for this major yet.<br>Be the first to click "Share Experience"!
-          </div>
-          <div class="empty-card"></div>
-        `;
+        container.innerHTML = `<div class="empty-card">No student opinions posted for this major yet.<br>Click "Share Experience" to add yours!</div>`;
         return;
       }
 
       filtered.forEach(op => {
         const card = document.createElement('div');
         card.className = 'opinion-card';
+        const delBtn = !op.isDefault ? `<button class="del-btn" onclick="deleteOne(${op.realIndex})">Delete ✕</button>` : '';
+
         card.innerHTML = `
           <div class="op-header">
             <span class="op-major">${op.major}</span>
-            <span class="op-badge">${op.status || 'Student'} • ${op.year || 'BH'}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <span class="op-badge">${op.status || 'Student'} • ${op.year || 'BH'}</span>
+              ${delBtn}
+            </div>
           </div>
           ${op.hardest ? `<div class="op-detail"><strong>Hardest part:</strong> ${op.hardest}</div>` : ''}
           ${op.nature ? `<div class="op-detail"><strong>Study nature:</strong> ${op.nature}</div>` : ''}
