@@ -3,53 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Finder BH - Share Opinion</title>
+  <title>Path Finder BH - Share Experience</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; color: #2b2d42; }
-    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
-    .container { flex: 1; max-width: 520px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .header { background-color: #d90429; height: 65px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: white; font-weight: bold; font-size: 18px; }
+    .back-link { color: white; text-decoration: none; font-size: 14px; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 10px; }
     
-    .row { display: flex; gap: 10px; }
-    .field { background-color: #ffffff; border: 1.5px solid #edf2f4; padding: 14px 16px; border-radius: 16px; width: 100%; font-size: 13.5px; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); color: #2b2d42; transition: border-color 0.2s; }
-    .field:focus { border-color: #d90429; }
-    textarea.field { height: 120px; resize: none; }
+    .container { flex: 1; max-width: 540px; margin: 0 auto; width: 100%; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .form-card { background: #ffffff; border-radius: 22px; padding: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.05); border: 1px solid #edf2f4; display: flex; flex-direction: column; gap: 14px; }
     
-    .btn-group { display: flex; gap: 12px; margin-top: 8px; }
-    .form-btn { flex: 1; padding: 14px; border-radius: 16px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: opacity 0.2s; }
-    .btn-send { background-color: #d90429; color: white; }
-    .btn-cancel { background-color: #e0e0e0; color: #2b2d42; }
-    .form-btn:hover { opacity: 0.9; }
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-group label { font-size: 13px; font-weight: 700; color: #2b2d42; }
+    .form-input, .form-select, .form-textarea { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1.5px solid #dee2e6; font-size: 13.5px; outline: none; color: #2b2d42; background-color: #ffffff; transition: border-color 0.2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #d90429; }
+    
+    .submit-btn { background: linear-gradient(135deg, #ef233c, #d90429); color: white; border: none; padding: 14px; border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px rgba(217, 4, 41, 0.22); transition: opacity 0.2s; margin-top: 4px; }
+    .submit-btn:hover { opacity: 0.92; }
 
     .navbar { background-color: #d90429; height: 60px; display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: auto; position: sticky; bottom: 0; z-index: 100; }
     .navbar a { color: white; text-decoration: none; font-size: 14px; font-weight: 600; opacity: 0.9; }
-    .navbar a:hover { opacity: 1; }
+
+    /* ستايل القائمة المنسدلة الكشخة للتخصصات فقط */
+    select.native-hidden-select {
+      display: none !important;
+    }
+
+    .fancy-dd-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .fancy-dd-btn {
+      background: #ffffff;
+      color: #2b2d42;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      border: 1.5px solid #dee2e6;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .fancy-dd-btn:hover,
+    .fancy-dd-wrap.open .fancy-dd-btn {
+      border-color: #d90429;
+    }
+
+    .fancy-dd-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .fancy-dd-icon {
+      font-size: 11px;
+      color: #d90429;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .fancy-dd-wrap.open .fancy-dd-icon {
+      transform: rotate(180deg);
+    }
+
+    .fancy-dd-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+      border: 1px solid #edf2f4;
+      z-index: 9999;
+      overflow: hidden;
+      animation: ddPop 0.16s ease-out;
+    }
+
+    .fancy-dd-wrap.open .fancy-dd-menu {
+      display: block;
+    }
+
+    @keyframes ddPop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fancy-dd-search-box {
+      padding: 10px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #edf2f4;
+    }
+
+    .fancy-dd-search {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #dee2e6;
+      font-size: 13px;
+      outline: none;
+      color: #2b2d42;
+    }
+
+    .fancy-dd-search:focus {
+      border-color: #d90429;
+    }
+
+    .fancy-dd-list {
+      max-height: 250px;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+      padding: 6px;
+    }
+
+    .fancy-dd-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .fancy-dd-list::-webkit-scrollbar-thumb {
+      background: #d0d7de;
+      border-radius: 10px;
+    }
+
+    .fancy-dd-item {
+      padding: 9px 12px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2b2d42;
+      cursor: pointer;
+      transition: 0.15s;
+      margin-bottom: 2px;
+      line-height: 1.4;
+    }
+
+    .fancy-dd-item:hover {
+      background: #fff0f3;
+      color: #d90429;
+      padding-left: 16px;
+    }
+
+    .fancy-dd-item.active {
+      background: linear-gradient(135deg, #ef233c, #d90429);
+      color: #ffffff;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
-  <header class="header">Share Your Experience</header>
+  <header class="header">
+    <a href="opinions.html" class="back-link">← Back</a>
+    <span>Share Experience</span>
+    <span style="width: 50px;"></span>
+  </header>
 
   <main class="container">
-    <!-- اختيار التخصص من جميع تخصصات البحرين -->
-    <select id="majorSelect" class="field" required>
-      <option value="" disabled selected>Select your major * (اختر التخصص)</option>
-    </select>
+    <form class="form-card" onsubmit="saveOpinion(event)">
+      <div class="field-group">
+        <label for="opMajor">Major (التخصص)</label>
+        <select id="opMajor" class="form-select" required></select>
+      </div>
 
-    <div class="row">
-      <input type="text" id="statusInput" class="field" placeholder="Your status (e.g., Student / Graduate)">
-      <input type="text" id="yearInput" class="field" placeholder="Study / graduation year">
-    </div>
+      <div class="field-group">
+        <label for="opStatus">Your Status</label>
+        <select id="opStatus" class="form-select">
+          <option value="Current Student">Current Student</option>
+          <option value="Senior Student">Senior Student</option>
+          <option value="Graduate">Graduate</option>
+        </select>
+      </div>
 
-    <input type="text" id="hardestInput" class="field" placeholder="Hardest part?">
-    <input type="text" id="natureInput" class="field" placeholder="Study nature (theory/practical, projects/exams...)">
-    <input type="text" id="jobsInput" class="field" placeholder="Job market — what do graduates work as?">
-    <textarea id="adviceInput" class="field" placeholder="Your advice for a student considering this major *"></textarea>
+      <div class="field-group">
+        <label for="opYear">Batch / Year</label>
+        <input type="text" id="opYear" class="form-input" placeholder="e.g., 2026" value="2026">
+      </div>
 
-    <div class="btn-group">
-      <button type="button" class="form-btn btn-send" onclick="submitOpinion()">Send</button>
-      <a href="opinions.html" class="form-btn btn-cancel">Cancel</a>
-    </div>
+      <div class="field-group">
+        <label for="opHardest">Hardest Part of the Major</label>
+        <input type="text" id="opHardest" class="form-input" placeholder="e.g., Math courses, graduation project...">
+      </div>
+
+      <div class="field-group">
+        <label for="opNature">Study Nature (Practical vs Theory)</label>
+        <input type="text" id="opNature" class="form-input" placeholder="e.g., 70% Practical labs & 30% Theory">
+      </div>
+
+      <div class="field-group">
+        <label for="opJobs">Job Market & Career Paths</label>
+        <input type="text" id="opJobs" class="form-input" placeholder="e.g., Software Developer, Systems Analyst...">
+      </div>
+
+      <div class="field-group">
+        <label for="opAdvice">Your Advice to New Students *</label>
+        <textarea id="opAdvice" rows="4" class="form-textarea" placeholder="Share your honest advice..." required></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Post Experience</button>
+    </form>
   </main>
 
   <nav class="navbar">
@@ -69,46 +230,69 @@
       "Data Analytics & AI (تحليل البيانات والذكاء الاصطناعي)",
       "Computer Engineering (هندسة الحاسوب)",
       "Network Engineering (هندسة الشبكات)",
+      "Informatics Engineering (هندسة المعلوماتية)",
+      "Cloud Computing (الحوسبة السحابية)",
+      "ICT - Programming (تقنية المعلومات - البرمجة)",
+      "ICT - Networking (تقنية المعلومات - الشبكات)",
+      "Distributed Systems & Multimedia (الأنظمة الموزعة والوسائط)",
+      "Mobile & Network Engineering (هندسة الشبكات والهواتف)",
       "Civil Engineering (الهندسة المدنية)",
       "Mechanical Engineering (الهندسة الميكانيكية)",
       "Electrical & Electronic Engineering (الهندسة الكهربائية والإلكترونية)",
+      "Electromechanical Engineering (الهندسة الكهروميكانيكية)",
       "Chemical Engineering (الهندسة الكيميائية)",
       "Mechatronics Engineering (هندسة الميكاترونكس)",
       "Industrial Engineering (الهندسة الصناعية)",
       "Environmental Engineering (الهندسة البيئية)",
+      "Architectural Engineering (الهندسة المعمارية)",
+      "Automotive Engineering (هندسة السيارات)",
+      "Process Instrumentation & Control Engineering (هندسة الأجهزة الدقيقة والتحكم)",
+      "Quantity Surveying (مسح الكميات)",
       "Architecture (العمارة)",
       "Interior Design (التصميم الداخلي)",
+      "Landscape Architecture (عمارة البيئة)",
       "Graphic Design (التصميم الجرافيكي)",
       "Multimedia & Visual Design (الوسائط المتعددة والتصميم المرئي)",
+      "Web Media & Creative Media (إعلام الويب والإعلام الإبداعي)",
+      "Film & Animation (الأفلام والرسوم المتحركة)",
       "Fashion Design (تصميم الأزياء)",
       "Medicine - MD (الطب البشري)",
       "Nursing (التمريض)",
+      "Midwifery (القبالة)",
       "Pharmacy (الصيدلة)",
       "Physiotherapy (العلاج الطبيعي)",
       "Medical Laboratory Sciences (علوم المختبرات الطبية)",
+      "Radiologic Technology (تقنية الأشعة)",
       "Law / LLB (الحقوق / القانون)",
       "Political Science (العلوم السياسية)",
       "Business Administration & Management (إدارة الأعمال)",
       "International Business (الأعمال الدولية)",
+      "Accounting (المحاسبة)",
       "Accounting & Finance (المحاسبة والتمويل)",
       "Banking & Finance (المصارف والتمويل)",
       "Islamic Finance (التمويل الإسلامي)",
+      "FinTech & Digital Innovation (التقنية المالية والابتكار)",
+      "Business Analytics (تحليلات الأعمال)",
       "Marketing & Digital Media (التسويق والإعلام الرقمي)",
       "Human Resource Management (إدارة الموارد البشرية)",
       "International Logistics Management (إدارة اللوجستيات)",
       "Economics (الاقتصاد)",
       "Mass Communication & Media (الإعلام والعلاقات العامة)",
+      "Digital Media (الإعلام الرقمي)",
       "English Language & Literature (اللغة الإنجليزية وآدابها)",
+      "American Studies (الدراسات الأمريكية)",
       "Arabic Language & Islamic Studies (اللغة العربية والدراسات الإسلامية)",
+      "History (التاريخ)",
       "Psychology & Sociology (علم النفس وعلم الاجتماع)",
       "Education & Teaching (التربية والتعليم)",
       "Mathematics & Actuarial Science (الرياضيات والعلوم الاكتوارية)",
+      "Statistics & Operations Research (الإحصاء وبحوث العمليات)",
       "Physics, Chemistry & Biology (العلوم الأساسية)",
       "Physical Education (التربية الرياضية)",
       "Tourism (السياحة)"
     ];
 
-    const majorSelect = document.getElementById('majorSelect');
+    const majorSelect = document.getElementById('opMajor');
     allBahrainMajors.forEach(major => {
       const opt = document.createElement('option');
       opt.value = major;
@@ -116,42 +300,93 @@
       majorSelect.appendChild(opt);
     });
 
-    function submitOpinion() {
-      const major = document.getElementById('majorSelect').value;
-      const status = document.getElementById('statusInput').value.trim();
-      const year = document.getElementById('yearInput').value.trim();
-      const hardest = document.getElementById('hardestInput').value.trim();
-      const nature = document.getElementById('natureInput').value.trim();
-      const jobs = document.getElementById('jobsInput').value.trim();
-      const advice = document.getElementById('adviceInput').value.trim();
-
-      if (!major) {
-        alert("Please select a major first!");
-        return;
-      }
-      if (!advice) {
-        alert("Please write your advice for students before sending!");
-        return;
-      }
-
+    function saveOpinion(e) {
+      e.preventDefault();
       const newOpinion = {
-        major: major,
-        status: status || "Student",
-        year: year || "2026",
-        hardest: hardest,
-        nature: nature,
-        jobs: jobs,
-        advice: advice
+        major: document.getElementById('opMajor').value,
+        status: document.getElementById('opStatus').value,
+        year: document.getElementById('opYear').value.trim() || '2026',
+        hardest: document.getElementById('opHardest').value.trim(),
+        nature: document.getElementById('opNature').value.trim(),
+        jobs: document.getElementById('opJobs').value.trim(),
+        advice: document.getElementById('opAdvice').value.trim()
       };
 
       const existing = JSON.parse(localStorage.getItem('pathFinderOpinions') || '[]');
       existing.unshift(newOpinion);
       localStorage.setItem('pathFinderOpinions', JSON.stringify(existing));
-
-      // الانتقال التلقائي لصفحة الآراء وعرض التجربة الجديدة في أول مستطيل أبيض
-      window.location.href = "opinions.html";
+      window.location.href = 'opinions.html';
     }
-  </script>
 
+    // تحويل حقل التخصص فقط إلى القائمة الكشخة القابلة للبحث
+    (function upgradeShareMajorDropdown() {
+      const targetSelect = document.getElementById('opMajor');
+      if (!targetSelect) return;
+
+      targetSelect.classList.add('native-hidden-select');
+
+      const wrap = document.createElement('div');
+      wrap.className = 'fancy-dd-wrap';
+
+      const btn = document.createElement('div');
+      btn.className = 'fancy-dd-btn';
+      btn.innerHTML = `
+        <span class="fancy-dd-label">${targetSelect.options[targetSelect.selectedIndex].text}</span>
+        <span class="fancy-dd-icon">▼</span>
+      `;
+
+      const menu = document.createElement('div');
+      menu.className = 'fancy-dd-menu';
+      menu.innerHTML = `
+        <div class="fancy-dd-search-box">
+          <input type="text" class="fancy-dd-search" placeholder="Search major...">
+        </div>
+        <ul class="fancy-dd-list"></ul>
+      `;
+
+      const ul = menu.querySelector('.fancy-dd-list');
+      const searchInput = menu.querySelector('.fancy-dd-search');
+      const labelSpan = btn.querySelector('.fancy-dd-label');
+
+      Array.from(targetSelect.options).forEach((opt, idx) => {
+        const li = document.createElement('li');
+        li.className = 'fancy-dd-item' + (idx === targetSelect.selectedIndex ? ' active' : '');
+        li.textContent = opt.text;
+
+        li.addEventListener('click', (e) => {
+          e.stopPropagation();
+          targetSelect.value = opt.value;
+          labelSpan.textContent = opt.text;
+
+          ul.querySelectorAll('.fancy-dd-item').forEach(el => el.classList.remove('active'));
+          li.classList.add('active');
+          wrap.classList.remove('open');
+        });
+
+        ul.appendChild(li);
+      });
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        wrap.classList.toggle('open');
+        if (wrap.classList.contains('open')) searchInput.focus();
+      });
+
+      menu.addEventListener('click', (e) => e.stopPropagation());
+
+      searchInput.addEventListener('keyup', () => {
+        const q = searchInput.value.toLowerCase().trim();
+        ul.querySelectorAll('.fancy-dd-item').forEach(li => {
+          li.style.display = li.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+        });
+      });
+
+      document.addEventListener('click', () => wrap.classList.remove('open'));
+
+      wrap.appendChild(btn);
+      wrap.appendChild(menu);
+      targetSelect.parentNode.insertBefore(wrap, targetSelect);
+    })();
+  </script>
 </body>
 </html>
